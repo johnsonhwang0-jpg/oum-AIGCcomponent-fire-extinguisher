@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FIRE RESPONSE TRAINING — 灭火器选择大挑战</title>
+<title>FIRE RESPONSE TRAINING — Fire Extinguisher Challenge</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
@@ -927,23 +927,23 @@ body {
 /* RESULT OVERLAY */
 /* ============================================ */
 .result-overlay {
-  position: absolute; inset: 0; z-index: 50;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(10,10,20,0.8);
-  backdrop-filter: blur(4px);
+  position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 50;
+  display: flex; align-items: flex-end; justify-content: center;
   opacity: 0; transition: opacity 0.5s;
   pointer-events: none;
+  width: auto;
 }
 .result-overlay.visible { opacity: 1; pointer-events: auto; }
 
 .result-card {
   background: linear-gradient(135deg, rgba(20,20,35,0.98), rgba(25,25,40,0.95));
   border: 1px solid rgba(255,255,255,0.1);
-  max-width: 520px; width: 90%;
-  padding: 40px;
+  max-width: 480px; width: auto;
+  padding: 24px 32px;
   text-align: center;
   transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  border-radius: 12px;
 }
 .result-overlay.visible .result-card { transform: scale(1); }
 .result-card::before {
@@ -956,13 +956,13 @@ body {
 .result-overlay.visible .result-card.fail-card::before { background: var(--red); }
 
 .result-icon {
-  font-size: 48px; margin-bottom: 16px;
+  font-size: 36px; margin-bottom: 12px;
 }
 .result-title {
   font-family: 'Orbitron', monospace;
-  font-size: 22px; font-weight: 800;
-  letter-spacing: 4px; text-transform: uppercase;
-  margin-bottom: 8px;
+  font-size: 18px; font-weight: 800;
+  letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 6px;
 }
 .result-title.success { color: var(--green); }
 .result-title.partial { color: var(--amber); }
@@ -971,24 +971,26 @@ body {
 
 .result-score {
   font-family: 'Orbitron', monospace;
-  font-size: 16px; color: var(--amber);
-  margin-bottom: 16px;
+  font-size: 14px; color: var(--amber);
+  margin-bottom: 12px;
 }
 .result-explanation {
-  font-size: 15px; line-height: 1.7;
+  font-size: 13px; line-height: 1.6;
   color: var(--steel);
-  margin-bottom: 24px;
+  margin-bottom: 16px;
+  max-height: 100px;
+  overflow-y: auto;
 }
 .result-explanation strong { color: var(--white); }
 
 .result-btn {
   display: inline-block;
   font-family: 'Rajdhani', sans-serif;
-  font-size: 16px; font-weight: 700;
+  font-size: 14px; font-weight: 700;
   letter-spacing: 2px; text-transform: uppercase;
   color: var(--charcoal-deep);
   background: var(--amber);
-  border: none; padding: 14px 40px;
+  border: none; padding: 10px 28px;
   cursor: pointer;
   transition: all 0.3s;
 }
@@ -1001,20 +1003,23 @@ body {
 /* DANGER OVERLAY (for water on electrical/grease) */
 /* ============================================ */
 .danger-overlay {
-  position: fixed; inset: 0; z-index: 9000;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(150,15,20,0.85);
-  backdrop-filter: blur(6px);
+  position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9000;
+  display: flex; align-items: flex-end; justify-content: center;
   opacity: 0; pointer-events: none;
   transition: opacity 0.3s;
+  width: auto;
 }
 .danger-overlay.visible { opacity: 1; pointer-events: auto; }
 
 .danger-content {
-  text-align: center; max-width: 550px; padding: 40px;
+  text-align: center; max-width: 480px; padding: 24px 32px;
+  background: linear-gradient(135deg, rgba(150,15,20,0.98), rgba(180,20,30,0.95));
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
 }
 .danger-icon {
-  font-size: 80px; margin-bottom: 20px;
+  font-size: 48px; margin-bottom: 12px;
   animation: dangerBounce 0.6s ease;
 }
 @keyframes dangerBounce {
@@ -1024,25 +1029,27 @@ body {
 }
 .danger-title {
   font-family: 'Orbitron', monospace;
-  font-size: 36px; font-weight: 900;
+  font-size: 20px; font-weight: 900;
   color: var(--white);
-  letter-spacing: 6px;
-  text-shadow: 0 0 30px rgba(230,57,70,0.8);
-  margin-bottom: 16px;
+  letter-spacing: 4px;
+  text-shadow: 0 0 20px rgba(230,57,70,0.8);
+  margin-bottom: 12px;
 }
 .danger-text {
-  font-size: 18px; line-height: 1.7;
+  font-size: 14px; line-height: 1.6;
   color: rgba(255,255,255,0.9);
-  margin-bottom: 30px;
+  margin-bottom: 20px;
+  max-height: 120px;
+  overflow-y: auto;
 }
 .danger-btn {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 16px; font-weight: 700;
+  font-size: 14px; font-weight: 700;
   letter-spacing: 2px; text-transform: uppercase;
   color: var(--white);
   background: rgba(255,255,255,0.15);
   border: 2px solid var(--white);
-  padding: 14px 40px;
+  padding: 10px 28px;
   cursor: pointer;
   transition: all 0.3s;
 }
@@ -1553,7 +1560,7 @@ body {
         <span class="wc-item">CLASS F</span>
       </div>
       <div class="welcome-title">FIRE RESPONSE<br>TRAINING</div>
-      <div class="welcome-subtitle">灭火器选择大挑战</div>
+      <div class="welcome-subtitle">FIRE EXTINGUISHER CHALLENGE</div>
       <div class="welcome-divider"></div>
       <div class="welcome-brief">
         You are the safety officer. When fire breaks out, you have <strong style="color:var(--amber)">seconds</strong> to choose the right extinguisher.<br>
@@ -1595,7 +1602,7 @@ body {
   <!-- Classify Panel (Step 1) -->
   <div class="classify-panel" id="classifyPanel">
     <div class="classify-panel-header">
-      <div class="classify-panel-title">Step 1: Identify Fire Class 第一步：判断火灾类型</div>
+      <div class="classify-panel-title">STEP 1: IDENTIFY FIRE CLASS</div>
       <div class="classify-panel-subtitle">Look at the scene — what type of fire is this?</div>
     </div>
     <div class="classify-options" id="classifyOptions">
@@ -1606,7 +1613,7 @@ body {
   <!-- Extinguisher Panel (Step 2) -->
   <div class="ext-panel" id="extPanel">
     <div class="ext-panel-header">
-      <div class="ext-panel-title">Step 2: Select Extinguisher 第二步：选择灭火器</div>
+      <div class="ext-panel-title">STEP 2: SELECT EXTINGUISHER</div>
       <div class="ext-panel-hint" id="extHint"></div>
     </div>
     <div class="ext-options" id="extOptions">
@@ -1621,19 +1628,18 @@ body {
 // GAME DATA
 // ============================================
 const EXTINGUISHERS = [
-  { id: 'water', name: 'Water', nameCn: '水基', cssClass: 'water' },
-  { id: 'foam', name: 'Foam', nameCn: '泡沫', cssClass: 'foam' },
-  { id: 'co2', name: 'CO₂', nameCn: '二氧化碳', cssClass: 'co2' },
-  { id: 'powder', name: 'Dry Powder', nameCn: '干粉', cssClass: 'powder' },
-  { id: 'wetchem', name: 'Wet Chemical', nameCn: '湿化学', cssClass: 'wetchem' },
-  { id: 'metalD', name: 'Class D Powder', nameCn: 'D类专用粉', cssClass: 'metalD' }
+  { id: 'water', name: 'Water', cssClass: 'water' },
+  { id: 'foam', name: 'Foam', cssClass: 'foam' },
+  { id: 'co2', name: 'CO₂', cssClass: 'co2' },
+  { id: 'powder', name: 'Dry Powder', cssClass: 'powder' },
+  { id: 'wetchem', name: 'Wet Chemical', cssClass: 'wetchem' },
+  { id: 'metalD', name: 'Class D Powder', cssClass: 'metalD' }
 ];
 
 const SCENARIOS = [
   {
     id: 'paper',
     name: 'Paper Storage Room',
-    nameCn: '纸张仓库',
     fireClass: 'A',
     fireClassDesc: 'Ordinary Combustibles',
     bgClass: 'paper-room',
@@ -1652,7 +1658,6 @@ const SCENARIOS = [
   {
     id: 'electrical',
     name: 'Electrical Panel Room',
-    nameCn: '配电房',
     fireClass: 'C',
     fireClassDesc: 'Electrical Equipment',
     bgClass: 'electrical-room',
@@ -1671,7 +1676,6 @@ const SCENARIOS = [
   {
     id: 'chemical',
     name: 'Chemical Lab — Solvent Spill',
-    nameCn: '化学实验室 — 溶剂泄漏',
     fireClass: 'B',
     fireClassDesc: 'Flammable Liquids',
     bgClass: 'chem-lab',
@@ -1690,7 +1694,6 @@ const SCENARIOS = [
   {
     id: 'kitchen',
     name: 'Kitchen — Deep Fryer Fire',
-    nameCn: '厨房油锅起火',
     fireClass: 'F',
     fireClassDesc: 'Cooking Oils & Fats',
     bgClass: 'kitchen',
@@ -1709,7 +1712,6 @@ const SCENARIOS = [
   {
     id: 'metal',
     name: 'Metal Workshop — Magnesium Fire',
-    nameCn: '金属加工车间 — 镁金属起火',
     fireClass: 'D',
     fireClassDesc: 'Combustible Metals',
     bgClass: 'metal-workshop',
@@ -1728,10 +1730,10 @@ const SCENARIOS = [
 ];
 
 const PASS_STEPS = [
-  { letter: 'P', en: 'Pull', cn: '拉保险销', desc: 'Pull the safety pin' },
-  { letter: 'A', en: 'Aim', cn: '瞄准火焰根部', desc: 'Aim at the base of the fire' },
-  { letter: 'S', en: 'Squeeze', cn: '压下把手', desc: 'Squeeze the handle' },
-  { letter: 'S', en: 'Sweep', cn: '扫射移动', desc: 'Sweep side to side' }
+  { letter: 'P', en: 'Pull', desc: 'Pull the safety pin' },
+  { letter: 'A', en: 'Aim', desc: 'Aim at the base of the fire' },
+  { letter: 'S', en: 'Squeeze', desc: 'Squeeze the handle' },
+  { letter: 'S', en: 'Sweep', desc: 'Sweep side to side' }
 ];
 
 // ============================================
@@ -1821,11 +1823,11 @@ function updateHudSteps() {
 // SCENARIO LOGIC
 // ============================================
 const FIRE_CLASSES = [
-  { letter: 'A', name: 'Ordinary Combustibles', nameCn: '普通可燃物' },
-  { letter: 'B', name: 'Flammable Liquids', nameCn: '可燃液体' },
-  { letter: 'C', name: 'Electrical Equipment', nameCn: '电气设备' },
-  { letter: 'D', name: 'Combustible Metals', nameCn: '可燃金属' },
-  { letter: 'F', name: 'Cooking Oils & Fats', nameCn: '烹饪油脂' }
+  { letter: 'A', name: 'Ordinary Combustibles' },
+  { letter: 'B', name: 'Flammable Liquids' },
+  { letter: 'C', name: 'Electrical Equipment' },
+  { letter: 'D', name: 'Combustible Metals' },
+  { letter: 'F', name: 'Cooking Oils & Fats' }
 ];
 
 function startScenario(idx) {
@@ -1892,17 +1894,16 @@ function buildSceneHTML(sc) {
       <div class="scene-info" style="opacity:0;transition:opacity 0.5s" id="sceneInfo">
         <div class="scene-alert">🚨 FIRE ALERT</div>
         <div class="scene-location">${sc.name}</div>
-        <div class="scene-location-cn">${sc.nameCn}</div>
       </div>
       <div class="fire-class-badge" style="opacity:0;transition:opacity 0.5s" id="fireClassBadge">
         <div class="label">Fire Class</div>
         <div class="class-letter" id="classLetterDisplay">?</div>
-        <div class="class-desc" id="classDescDisplay">Identify the type</div>
+        <div class="class-desc" id="classDescDisplay"></div>
       </div>
       <div class="alert-overlay" id="alertOverlay">
         <div class="alert-siren">🚨</div>
         <div class="alert-location-name">${sc.name}</div>
-        <div class="alert-class-indicator">FIRE CLASS ${sc.fireClass} — ${sc.fireClassDesc}</div>
+        <div class="alert-class-indicator">FIRE ALERT</div>
       </div>
       <div class="result-overlay" id="resultOverlay">
         <div class="result-card">
@@ -2175,7 +2176,7 @@ function buildClassifyPanel(sc) {
     html += `
       <div class="classify-card" data-class="${fc.letter}" onclick="handleClassify('${fc.letter}')">
         <div class="cc-letter">${fc.letter}</div>
-        <div class="cc-name">${fc.name}<br>${fc.nameCn}</div>
+        <div class="cc-name">${fc.name}</div>
       </div>
     `;
   });
@@ -2243,7 +2244,6 @@ function buildExtPanel(sc) {
         <div class="ext-result-badge" id="badge-${ext.id}"></div>
         <div class="ext-visual ${ext.cssClass}"></div>
         <div class="ext-name">${ext.name}</div>
-        <div class="ext-name-cn">${ext.nameCn}</div>
       </div>
     `;
   });
@@ -2364,10 +2364,10 @@ function handleChoice(extId) {
   clearInterval(fireEffectsInterval);
   clearInterval(fireEffectsInterval2);
 
-  // Show result overlay
+  // Show result overlay - reduced delay to show feedback faster
   setTimeout(() => {
     showResult(resultType, pts, explain);
-  }, 800);
+  }, 400);
 }
 
 function triggerFlash(type) {
@@ -2476,7 +2476,7 @@ function startPASS() {
     <div class="pass-phase" style="animation: fadeInUp 0.6s ease">
       <div class="pass-container">
         <div class="pass-title">P.A.S.S. TECHNIQUE</div>
-        <div class="pass-subtitle">Click the four steps in the correct order 按正确顺序点击四个步骤</div>
+        <div class="pass-subtitle">Click the four steps in the correct order</div>
         <div class="pass-ext-visual" id="passExt">
           <div class="spray-effect"></div>
         </div>
@@ -2487,7 +2487,7 @@ function startPASS() {
               <div class="pass-step-num">${i + 1}</div>
               <div class="pass-step-letter">${s.letter}</div>
               <div class="pass-step-en">${s.en}</div>
-              <div class="pass-step-cn">${s.cn}</div>
+              <div class="pass-step-desc">${s.desc}</div>
             </div>
           `).join('')}
         </div>
@@ -2556,12 +2556,12 @@ function showReport() {
   const max = state.maxScore;
   const pct = total / max;
 
-  let grade, gradeClass, titleEn, titleCn;
-  if (pct >= 0.9) { grade = 'S'; gradeClass = 's-rank'; titleEn = 'Chief Fire Officer'; titleCn = '首席消防官'; }
-  else if (pct >= 0.75) { grade = 'A'; gradeClass = 'a-rank'; titleEn = 'Senior Safety Specialist'; titleCn = '高级安全专员'; }
-  else if (pct >= 0.55) { grade = 'B'; gradeClass = 'b-rank'; titleEn = 'Safety Specialist'; titleCn = '安全专员'; }
-  else if (pct >= 0.3) { grade = 'C'; gradeClass = 'c-rank'; titleEn = 'Safety Trainee'; titleCn = '安全实习生'; }
-  else { grade = 'F'; gradeClass = 'f-rank'; titleEn = 'Needs Retraining'; titleCn = '需要重新培训'; }
+  let grade, gradeClass, title;
+  if (pct >= 0.9) { grade = 'S'; gradeClass = 's-rank'; title = 'Chief Fire Officer'; }
+  else if (pct >= 0.75) { grade = 'A'; gradeClass = 'a-rank'; title = 'Senior Safety Specialist'; }
+  else if (pct >= 0.55) { grade = 'B'; gradeClass = 'b-rank'; title = 'Safety Specialist'; }
+  else if (pct >= 0.3) { grade = 'C'; gradeClass = 'c-rank'; title = 'Safety Trainee'; }
+  else { grade = 'F'; gradeClass = 'f-rank'; title = 'Needs Retraining'; }
 
   // Compute category scores for radar
   const classifyScore = state.scenarioResults.filter(r => r && r.classifyCorrect).length * 2;
@@ -2571,11 +2571,11 @@ function showReport() {
   const techniqueScore = state.passScore * 3;
 
   const categories = [
-    { name: 'Fire Classification 火灾分类', score: classifyScore, max: 10 },
-    { name: 'Extinguisher Selection 灭火器选择', score: extinguisherScore, max: 15 },
-    { name: 'Response Speed 响应速度', score: Math.min(speedScore, 15), max: 15 },
-    { name: 'Safety Awareness 安全意识', score: Math.min(safetyScore, 12), max: 12 },
-    { name: 'P.A.S.S. Technique 操作技术', score: Math.min(techniqueScore, 12), max: 12 }
+    { name: 'Fire Classification', score: classifyScore, max: 10 },
+    { name: 'Extinguisher Selection', score: extinguisherScore, max: 15 },
+    { name: 'Response Speed', score: Math.min(speedScore, 15), max: 15 },
+    { name: 'Safety Awareness', score: Math.min(safetyScore, 12), max: 12 },
+    { name: 'P.A.S.S. Technique', score: Math.min(techniqueScore, 12), max: 12 }
   ];
 
   gameArea.innerHTML = `
@@ -2583,8 +2583,7 @@ function showReport() {
       <div class="report-container">
         <div class="report-header">
           <div class="report-grade ${gradeClass}">${grade}</div>
-          <div class="report-title-text">${titleEn}</div>
-          <div class="report-title-cn">${titleCn}</div>
+          <div class="report-title-text">${title}</div>
           <div class="report-total-score">Total Score: <em>${total}</em> / ${max} (${Math.round(pct * 100)}%)</div>
         </div>
 
@@ -2617,10 +2616,10 @@ function showReport() {
             const classResult = r.classifyCorrect ? '<span style="color:var(--green)">✓ Correct</span>' : '<span style="color:var(--red)">✗ Wrong</span>';
             return `
               <div class="report-scenario-card">
-                <div class="sc-name">Scenario ${i + 1}: ${r.scenario.nameCn}</div>
+                <div class="sc-name">Scenario ${i + 1}: ${r.scenario.name}</div>
                 <div class="sc-result">
                   Class ID: ${classResult} (Class ${r.scenario.fireClass})<br>
-                  Extinguisher: ${chosen ? chosen.name + ' (' + chosen.nameCn + ')' : 'No selection'}<br>
+                  Extinguisher: ${chosen ? chosen.name : 'No selection'}<br>
                   Result: ${r.resultType === 'best' ? '★ Best' : r.resultType === 'ok' ? '⚠ OK' : r.resultType === 'danger' ? '⚠ DANGER' : '✗ Failed'}
                 </div>
                 <div class="sc-points ${ptClass}">+${(r.classifyCorrect ? 2 : 0) + (r.points || 0)} pts</div>
