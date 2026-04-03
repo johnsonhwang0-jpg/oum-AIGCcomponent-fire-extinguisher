@@ -801,6 +801,8 @@ body {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 10px;
+  position: relative;
+  z-index: 100;
 }
 
 .ext-card {
@@ -812,7 +814,21 @@ body {
   position: relative;
   transition: all 0.25s;
   overflow: hidden;
+  animation: float 3s ease-in-out infinite;
 }
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+.ext-card:nth-child(1) { animation-delay: 0s; }
+.ext-card:nth-child(2) { animation-delay: 0.2s; }
+.ext-card:nth-child(3) { animation-delay: 0.4s; }
+.ext-card:nth-child(4) { animation-delay: 0.6s; }
+.ext-card:nth-child(5) { animation-delay: 0.8s; }
+.ext-card:nth-child(6) { animation-delay: 1s; }
 .ext-card::before {
   content: '';
   position: absolute; inset: 0;
@@ -927,23 +943,23 @@ body {
 /* RESULT OVERLAY */
 /* ============================================ */
 .result-overlay {
-  position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 50;
-  display: flex; align-items: flex-end; justify-content: center;
+  position: absolute; inset: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(10,10,20,0.8);
+  backdrop-filter: blur(4px);
   opacity: 0; transition: opacity 0.5s;
   pointer-events: none;
-  width: auto;
 }
 .result-overlay.visible { opacity: 1; pointer-events: auto; }
 
 .result-card {
   background: linear-gradient(135deg, rgba(20,20,35,0.98), rgba(25,25,40,0.95));
   border: 1px solid rgba(255,255,255,0.1);
-  max-width: 480px; width: auto;
-  padding: 24px 32px;
+  max-width: 520px; width: 90%;
+  padding: 40px;
   text-align: center;
   transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-  border-radius: 12px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
 }
 .result-overlay.visible .result-card { transform: scale(1); }
 .result-card::before {
@@ -956,13 +972,13 @@ body {
 .result-overlay.visible .result-card.fail-card::before { background: var(--red); }
 
 .result-icon {
-  font-size: 36px; margin-bottom: 12px;
+  font-size: 48px; margin-bottom: 16px;
 }
 .result-title {
   font-family: 'Orbitron', monospace;
-  font-size: 18px; font-weight: 800;
-  letter-spacing: 3px; text-transform: uppercase;
-  margin-bottom: 6px;
+  font-size: 22px; font-weight: 800;
+  letter-spacing: 4px; text-transform: uppercase;
+  margin-bottom: 8px;
 }
 .result-title.success { color: var(--green); }
 .result-title.partial { color: var(--amber); }
@@ -971,26 +987,24 @@ body {
 
 .result-score {
   font-family: 'Orbitron', monospace;
-  font-size: 14px; color: var(--amber);
-  margin-bottom: 12px;
+  font-size: 16px; color: var(--amber);
+  margin-bottom: 16px;
 }
 .result-explanation {
-  font-size: 13px; line-height: 1.6;
+  font-size: 15px; line-height: 1.7;
   color: var(--steel);
-  margin-bottom: 16px;
-  max-height: 100px;
-  overflow-y: auto;
+  margin-bottom: 24px;
 }
 .result-explanation strong { color: var(--white); }
 
 .result-btn {
   display: inline-block;
   font-family: 'Rajdhani', sans-serif;
-  font-size: 14px; font-weight: 700;
+  font-size: 16px; font-weight: 700;
   letter-spacing: 2px; text-transform: uppercase;
   color: var(--charcoal-deep);
   background: var(--amber);
-  border: none; padding: 10px 28px;
+  border: none; padding: 14px 40px;
   cursor: pointer;
   transition: all 0.3s;
 }
@@ -1003,23 +1017,20 @@ body {
 /* DANGER OVERLAY (for water on electrical/grease) */
 /* ============================================ */
 .danger-overlay {
-  position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9000;
-  display: flex; align-items: flex-end; justify-content: center;
+  position: fixed; inset: 0; z-index: 9000;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(150,15,20,0.85);
+  backdrop-filter: blur(6px);
   opacity: 0; pointer-events: none;
   transition: opacity 0.3s;
-  width: auto;
 }
 .danger-overlay.visible { opacity: 1; pointer-events: auto; }
 
 .danger-content {
-  text-align: center; max-width: 480px; padding: 24px 32px;
-  background: linear-gradient(135deg, rgba(150,15,20,0.98), rgba(180,20,30,0.95));
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  text-align: center; max-width: 550px; padding: 40px;
 }
 .danger-icon {
-  font-size: 48px; margin-bottom: 12px;
+  font-size: 80px; margin-bottom: 20px;
   animation: dangerBounce 0.6s ease;
 }
 @keyframes dangerBounce {
@@ -1029,27 +1040,25 @@ body {
 }
 .danger-title {
   font-family: 'Orbitron', monospace;
-  font-size: 20px; font-weight: 900;
+  font-size: 36px; font-weight: 900;
   color: var(--white);
-  letter-spacing: 4px;
-  text-shadow: 0 0 20px rgba(230,57,70,0.8);
-  margin-bottom: 12px;
+  letter-spacing: 6px;
+  text-shadow: 0 0 30px rgba(230,57,70,0.8);
+  margin-bottom: 16px;
 }
 .danger-text {
-  font-size: 14px; line-height: 1.6;
+  font-size: 18px; line-height: 1.7;
   color: rgba(255,255,255,0.9);
-  margin-bottom: 20px;
-  max-height: 120px;
-  overflow-y: auto;
+  margin-bottom: 30px;
 }
 .danger-btn {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 14px; font-weight: 700;
+  font-size: 16px; font-weight: 700;
   letter-spacing: 2px; text-transform: uppercase;
   color: var(--white);
   background: rgba(255,255,255,0.15);
   border: 2px solid var(--white);
-  padding: 10px 28px;
+  padding: 14px 40px;
   cursor: pointer;
   transition: all 0.3s;
 }
