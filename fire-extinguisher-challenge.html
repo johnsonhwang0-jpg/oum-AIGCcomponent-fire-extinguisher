@@ -1,0 +1,2763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIRE RESPONSE TRAINING — 灭火器选择大挑战</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* === CSS VARIABLES === */
+:root {
+  --charcoal: #1a1a2e;
+  --charcoal-deep: #0f0f1a;
+  --red: #e63946;
+  --red-dark: #9b1b23;
+  --amber: #f4a261;
+  --steel: #adb5bd;
+  --steel-dark: #6c757d;
+  --green: #06d6a0;
+  --green-dark: #04a077;
+  --white: #f8f9fa;
+  --blue-spark: #4cc9f0;
+  --orange-fire: #ff6b35;
+  --yellow-fire: #ffd60a;
+}
+
+/* === RESET & BASE === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: var(--charcoal-deep);
+  color: var(--white);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* === SVG FILTERS === */
+/* placeholder for SVG defs */
+
+/* === UTILITY === */
+.hidden { display: none !important; }
+.orbitron { font-family: 'Orbitron', monospace; }
+.rajdhani { font-family: 'Rajdhani', sans-serif; }
+
+/* === SCREEN SHAKE === */
+@keyframes screenShake {
+  0%, 100% { transform: translate(0); }
+  10% { transform: translate(-8px, 6px); }
+  20% { transform: translate(6px, -8px); }
+  30% { transform: translate(-6px, 4px); }
+  40% { transform: translate(8px, -4px); }
+  50% { transform: translate(-4px, 8px); }
+  60% { transform: translate(6px, -6px); }
+  70% { transform: translate(-8px, 4px); }
+  80% { transform: translate(4px, -8px); }
+  90% { transform: translate(-6px, 6px); }
+}
+.shake { animation: screenShake 0.5s ease-in-out; }
+
+/* === DANGER FLASH OVERLAY === */
+#dangerFlash {
+  position: fixed; inset: 0; z-index: 9999;
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.1s;
+}
+#dangerFlash.active {
+  animation: dangerPulse 0.6s ease-out;
+}
+@keyframes dangerPulse {
+  0% { opacity: 0.8; background: var(--red); }
+  100% { opacity: 0; background: var(--red); }
+}
+#dangerFlash.green-flash {
+  animation: greenPulse 0.5s ease-out;
+}
+@keyframes greenPulse {
+  0% { opacity: 0.5; background: var(--green); }
+  100% { opacity: 0; background: var(--green); }
+}
+
+/* === VIGNETTE === */
+#vignette {
+  position: fixed; inset: 0; z-index: 100;
+  pointer-events: none; opacity: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(230,57,70,0.4) 100%);
+  transition: opacity 0.5s;
+}
+#vignette.active { opacity: 1; animation: vignettePulse 1.5s ease-in-out infinite; }
+@keyframes vignettePulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* === MAIN APP CONTAINER === */
+#app {
+  width: 100%; min-height: 100vh; position: relative;
+}
+
+/* ============================================ */
+/* WELCOME SCREEN */
+/* ============================================ */
+#welcomeScreen {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--charcoal-deep);
+  overflow: hidden;
+}
+
+/* Industrial background texture */
+#welcomeScreen::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(90deg, transparent, transparent 98px, rgba(255,255,255,0.02) 98px, rgba(255,255,255,0.02) 100px),
+    repeating-linear-gradient(0deg, transparent, transparent 98px, rgba(255,255,255,0.02) 98px, rgba(255,255,255,0.02) 100px);
+}
+
+/* Emergency lights */
+.emergency-lights {
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: var(--red);
+  animation: emergencyBar 1.5s ease-in-out infinite;
+}
+.emergency-lights::after {
+  content: '';
+  position: absolute; bottom: -60px; left: 0; right: 0; height: 60px;
+  background: linear-gradient(to bottom, rgba(230,57,70,0.3), transparent);
+  animation: emergencyBar 1.5s ease-in-out infinite;
+}
+@keyframes emergencyBar {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.welcome-content {
+  position: relative; z-index: 2;
+  text-align: center; max-width: 700px; padding: 40px;
+}
+
+.welcome-icon {
+  width: 120px; height: 120px; margin: 0 auto 30px;
+  position: relative;
+}
+.welcome-icon .ext-body {
+  width: 50px; height: 100px; margin: 0 auto;
+  background: linear-gradient(135deg, #cc2233, var(--red), #cc2233);
+  border-radius: 8px 8px 4px 4px;
+  position: relative;
+  box-shadow: 0 0 30px rgba(230,57,70,0.4), inset 0 2px 4px rgba(255,255,255,0.2);
+}
+.welcome-icon .ext-body::before {
+  content: ''; position: absolute;
+  top: -14px; left: 50%; transform: translateX(-50%);
+  width: 12px; height: 18px; background: #555;
+  border-radius: 3px 3px 0 0;
+}
+.welcome-icon .ext-body::after {
+  content: ''; position: absolute;
+  top: -8px; right: -16px;
+  width: 20px; height: 6px; background: #555;
+  border-radius: 0 4px 4px 0;
+  transform: rotate(-20deg);
+}
+.welcome-icon .ext-label {
+  position: absolute; top: 30px; left: 50%; transform: translateX(-50%);
+  font-family: 'Orbitron', monospace; font-size: 7px; font-weight: 700;
+  color: rgba(255,255,255,0.9); letter-spacing: 0.5px;
+  text-transform: uppercase; white-space: nowrap;
+}
+
+.welcome-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 42px; font-weight: 900;
+  letter-spacing: 6px; text-transform: uppercase;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--white) 0%, var(--amber) 50%, var(--red) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.welcome-subtitle {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 26px; font-weight: 500;
+  color: var(--amber);
+  letter-spacing: 8px; text-transform: uppercase;
+  margin-bottom: 30px;
+}
+
+.welcome-brief {
+  font-size: 16px; line-height: 1.7;
+  color: var(--steel);
+  margin-bottom: 40px;
+  max-width: 550px; margin-left: auto; margin-right: auto;
+}
+
+.welcome-btn {
+  display: inline-block;
+  font-family: 'Orbitron', monospace;
+  font-size: 16px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--white);
+  background: linear-gradient(135deg, var(--red-dark), var(--red));
+  border: 2px solid var(--red);
+  padding: 18px 48px;
+  cursor: pointer;
+  position: relative; overflow: hidden;
+  transition: all 0.3s;
+  animation: btnPulse 2s ease-in-out infinite;
+}
+.welcome-btn:hover {
+  background: var(--red);
+  box-shadow: 0 0 40px rgba(230,57,70,0.6), 0 0 80px rgba(230,57,70,0.3);
+  transform: scale(1.04);
+}
+@keyframes btnPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(230,57,70,0.3); }
+  50% { box-shadow: 0 0 40px rgba(230,57,70,0.6), 0 0 60px rgba(230,57,70,0.2); }
+}
+
+/* Hazard stripes decoration */
+.hazard-stripe {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 20px;
+  background: repeating-linear-gradient(
+    -45deg, var(--amber), var(--amber) 10px, var(--charcoal-deep) 10px, var(--charcoal-deep) 20px
+  );
+  opacity: 0.5;
+}
+.hazard-stripe.top { bottom: auto; top: 4px; }
+
+/* Welcome smoke & atmospheric */
+.welcome-smoke {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+.scan-line {
+  position: absolute; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(230,57,70,0.15), transparent);
+  animation: scanDown 4s linear infinite;
+  pointer-events: none;
+}
+@keyframes scanDown {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+.welcome-fire-glow {
+  position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%);
+  width: 100px; height: 40px;
+  background: radial-gradient(ellipse, rgba(230,57,70,0.4), transparent 70%);
+  animation: glowPulse 2s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.2); }
+}
+.welcome-classification {
+  display: flex; gap: 10px; justify-content: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.wc-item {
+  font-family: 'Orbitron', monospace;
+  font-size: 10px; font-weight: 600;
+  color: var(--steel-dark);
+  letter-spacing: 1.5px;
+  padding: 4px 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  animation: fadeIn 0.5s ease backwards;
+}
+.wc-item:nth-child(1) { animation-delay: 0.1s; }
+.wc-item:nth-child(2) { animation-delay: 0.2s; }
+.wc-item:nth-child(3) { animation-delay: 0.3s; }
+.wc-item:nth-child(4) { animation-delay: 0.4s; }
+.wc-item:nth-child(5) { animation-delay: 0.5s; }
+.welcome-divider {
+  width: 60px; height: 2px; margin: 0 auto 24px;
+  background: linear-gradient(90deg, transparent, var(--red), transparent);
+}
+.welcome-stats {
+  display: flex; gap: 32px; justify-content: center;
+  margin-bottom: 36px;
+}
+.ws-item { text-align: center; }
+.ws-num {
+  font-family: 'Orbitron', monospace;
+  font-size: 28px; font-weight: 800;
+  color: var(--amber);
+  line-height: 1;
+}
+.ws-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 10px; font-weight: 600;
+  color: var(--steel-dark);
+  letter-spacing: 2px;
+  margin-top: 4px;
+  line-height: 1.3;
+}
+.welcome-btn .btn-inner { position: relative; z-index: 2; }
+.welcome-btn .btn-scan {
+  position: absolute; top: 0; left: -100%; width: 60px; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  animation: btnScanAnim 2.5s ease-in-out infinite;
+}
+@keyframes btnScanAnim {
+  0% { left: -60px; }
+  100% { left: calc(100% + 60px); }
+}
+@keyframes sprayBurst {
+  0% { opacity: 0; transform: translate(-50%,-50%) scale(0.3); }
+  30% { opacity: 0.8; }
+  100% { opacity: 0; transform: translate(-50%,-50%) scale(2); }
+}
+
+/* ============================================ */
+/* HUD / TOP BAR */
+/* ============================================ */
+#hud {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  height: 60px;
+  background: linear-gradient(to bottom, rgba(15,15,26,0.95), rgba(15,15,26,0.85));
+  border-bottom: 1px solid rgba(230,57,70,0.3);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 30px;
+  backdrop-filter: blur(10px);
+  opacity: 0; transition: opacity 0.5s;
+}
+#hud.visible { opacity: 1; }
+
+/* HUD scanline decoration */
+#hud::after {
+  content: '';
+  position: absolute; bottom: -1px; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--red), transparent);
+  opacity: 0.4;
+}
+
+.hud-left { display: flex; align-items: center; gap: 20px; }
+.hud-logo {
+  font-family: 'Orbitron', monospace;
+  font-size: 13px; font-weight: 700;
+  color: var(--red);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.hud-phase {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px; font-weight: 600;
+  color: var(--amber);
+  letter-spacing: 1px;
+}
+
+.hud-center {
+  display: flex; align-items: center; gap: 8px;
+}
+.hud-step {
+  width: 36px; height: 4px;
+  background: rgba(255,255,255,0.15);
+  position: relative; overflow: hidden;
+  transition: all 0.3s;
+}
+.hud-step.completed { background: var(--green); }
+.hud-step.active { background: var(--amber); animation: stepBlink 1s ease-in-out infinite; }
+@keyframes stepBlink {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+.hud-step-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 10px; color: var(--steel-dark);
+  letter-spacing: 1px; margin: 0 4px;
+}
+
+.hud-right { display: flex; align-items: center; gap: 24px; }
+.hud-score {
+  font-family: 'Orbitron', monospace;
+  font-size: 20px; font-weight: 700;
+  color: var(--amber);
+}
+.hud-score span { font-size: 13px; color: var(--steel-dark); }
+.hud-timer {
+  font-family: 'Orbitron', monospace;
+  font-size: 22px; font-weight: 700;
+  color: var(--white);
+  min-width: 60px; text-align: center;
+}
+.hud-timer.urgent { color: var(--red); animation: timerBlink 0.5s ease-in-out infinite; }
+@keyframes timerBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ============================================ */
+/* GAME AREA */
+/* ============================================ */
+#gameArea {
+  padding-top: 60px;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* === FIRE SCENE === */
+.fire-scene {
+  width: 100%; height: calc(100vh - 60px - 220px);
+  min-height: 340px;
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Heat haze overlay */
+.heat-haze {
+  position: absolute; inset: 0; z-index: 6;
+  background: transparent;
+  filter: url(#heatHaze);
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* Alert overlay that flashes at start */
+.alert-overlay {
+  position: absolute; inset: 0; z-index: 80;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: rgba(10,10,20,0.95);
+  transition: opacity 0.5s;
+}
+.alert-overlay.fade-out { opacity: 0; pointer-events: none; }
+.alert-siren {
+  font-size: 60px;
+  animation: sirenPulse 0.4s ease-in-out infinite alternate;
+}
+@keyframes sirenPulse {
+  0% { transform: scale(1) rotate(-10deg); filter: brightness(0.8); }
+  100% { transform: scale(1.15) rotate(10deg); filter: brightness(1.5); }
+}
+.alert-location-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 32px; font-weight: 900;
+  color: var(--white);
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  margin-top: 20px;
+  text-shadow: 0 0 30px rgba(230,57,70,0.6);
+  animation: alertTextIn 0.6s ease;
+}
+@keyframes alertTextIn {
+  0% { opacity: 0; transform: scale(1.5); letter-spacing: 20px; }
+  100% { opacity: 1; transform: scale(1); letter-spacing: 5px; }
+}
+.alert-class-indicator {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 18px; color: var(--amber);
+  margin-top: 10px; letter-spacing: 3px;
+}
+
+/* Floor reflection / glow from fire */
+.fire-floor-glow {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 40%;
+  background: linear-gradient(to top, rgba(255,100,20,0.15), transparent);
+  pointer-events: none; z-index: 2;
+  animation: floorGlow 1.5s ease-in-out infinite alternate;
+}
+@keyframes floorGlow {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+/* Scene backgrounds */
+.scene-bg {
+  position: absolute; inset: 0;
+  transition: opacity 0.8s;
+}
+.scene-bg.paper-room {
+  background:
+    linear-gradient(to bottom, #1a1510 0%, #2a2218 40%, #1f1a12 100%);
+}
+.scene-bg.paper-room::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent 0px, transparent 60px, rgba(139,90,43,0.08) 60px, rgba(139,90,43,0.08) 62px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 80px, rgba(139,90,43,0.05) 80px, rgba(139,90,43,0.05) 82px);
+}
+.scene-bg.electrical-room {
+  background: linear-gradient(to bottom, #0a0a1a 0%, #12121f 40%, #0a0a15 100%);
+}
+.scene-bg.chem-lab {
+  background: linear-gradient(to bottom, #1a1a20 0%, #18181f 50%, #121218 100%);
+}
+.scene-bg.kitchen {
+  background: linear-gradient(to bottom, #1f1812 0%, #2a2018 40%, #1a1510 100%);
+}
+
+/* Scene objects (CSS illustrations) */
+.scene-objects {
+  position: absolute; inset: 0;
+  z-index: 1;
+}
+
+/* Paper room boxes */
+.box-stack {
+  position: absolute;
+}
+.box {
+  width: 80px; height: 55px;
+  background: linear-gradient(135deg, #8B6914, #a57d1e, #8B6914);
+  border: 1px solid rgba(0,0,0,0.3);
+  position: relative;
+}
+.box::after {
+  content: '';
+  position: absolute; inset: 4px;
+  border: 1px solid rgba(0,0,0,0.15);
+}
+
+/* Electrical panel */
+.elec-panel {
+  position: absolute;
+  width: 180px; height: 260px;
+  background: linear-gradient(135deg, #3a3a4a, #4a4a5a, #3a3a4a);
+  border: 2px solid #555;
+  border-radius: 4px;
+}
+.elec-panel::before {
+  content: '⚡ HIGH VOLTAGE';
+  position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  font-family: 'Rajdhani', sans-serif; font-size: 9px; font-weight: 700;
+  color: var(--amber); letter-spacing: 1px;
+  background: var(--charcoal-deep); padding: 2px 8px;
+}
+.panel-light {
+  position: absolute; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 6px var(--red);
+  animation: panelBlink 0.3s ease-in-out infinite alternate;
+}
+@keyframes panelBlink {
+  0% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+/* Spark effect */
+.spark {
+  position: absolute; width: 4px; height: 4px;
+  background: var(--blue-spark);
+  box-shadow: 0 0 8px var(--blue-spark), 0 0 16px rgba(76,201,240,0.5);
+  border-radius: 50%;
+  animation: sparkFly 0.4s ease-out forwards;
+}
+@keyframes sparkFly {
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0); }
+}
+
+/* Chemical bottles */
+.chem-bottle {
+  position: absolute;
+  width: 30px; height: 50px;
+  border-radius: 6px 6px 2px 2px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.chem-bottle::before {
+  content: '';
+  position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+  width: 12px; height: 10px;
+  background: inherit; border-radius: 2px 2px 0 0;
+  opacity: 0.8;
+}
+
+/* Kitchen elements */
+.fryer {
+  position: absolute;
+  width: 120px; height: 80px;
+  background: linear-gradient(to bottom, #555, #3a3a3a);
+  border: 2px solid #666;
+  border-radius: 4px 4px 0 0;
+}
+.fryer::after {
+  content: '';
+  position: absolute; top: 10px; left: 10px; right: 10px; bottom: 0;
+  background: linear-gradient(to bottom, #2a1a00, #4a2a00);
+  border-radius: 2px;
+}
+
+/* ============================================ */
+/* FIRE ANIMATION (CSS) */
+/* ============================================ */
+.fire-container {
+  position: absolute; z-index: 5;
+  width: 220px; height: 220px;
+  transition: transform 1.2s, opacity 1.2s;
+  filter: url(#fireDistort);
+}
+.fire-container.extinguished {
+  transform: scale(0.05);
+  opacity: 0;
+  filter: none;
+}
+.fire-container.spread {
+  transform: scale(2.8);
+}
+/* Extra glow layer beneath fire */
+.fire-base-glow {
+  position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
+  width: 180px; height: 60px;
+  background: radial-gradient(ellipse, rgba(255,100,0,0.6) 0%, rgba(255,50,0,0.2) 40%, transparent 70%);
+  border-radius: 50%;
+  animation: baseGlow 0.8s ease-in-out infinite alternate;
+  z-index: 4;
+}
+@keyframes baseGlow {
+  0% { opacity: 0.7; transform: translateX(-50%) scaleX(0.95); }
+  100% { opacity: 1; transform: translateX(-50%) scaleX(1.05); }
+}
+
+.flame {
+  position: absolute; bottom: 0;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  animation: flicker var(--dur, 0.6s) ease-in-out infinite alternate;
+  filter: blur(2px);
+}
+@keyframes flicker {
+  0% { transform: scaleY(1) scaleX(1) translateX(0); opacity: var(--o1, 0.9); }
+  25% { transform: scaleY(1.1) scaleX(0.95) translateX(-2px); }
+  50% { transform: scaleY(0.9) scaleX(1.05) translateX(2px); opacity: var(--o2, 1); }
+  75% { transform: scaleY(1.05) scaleX(0.97) translateX(-1px); }
+  100% { transform: scaleY(0.95) scaleX(1.02) translateX(1px); opacity: var(--o1, 0.9); }
+}
+
+.flame.f1 {
+  left: 50%; transform: translateX(-50%);
+  width: 80px; height: 140px;
+  background: linear-gradient(to top, #ff4500, #ff6b35 30%, #ffd60a 70%, rgba(255,214,10,0.3));
+  --dur: 0.5s; --o1: 0.85; --o2: 1;
+}
+.flame.f2 {
+  left: 30%; width: 60px; height: 110px;
+  background: linear-gradient(to top, #ff6b35, #ffa040 40%, #ffd60a 80%, transparent);
+  --dur: 0.7s; --o1: 0.7; --o2: 0.9;
+  animation-delay: -0.2s;
+}
+.flame.f3 {
+  right: 25%; width: 55px; height: 100px;
+  background: linear-gradient(to top, #ff4500, #ff8c00 50%, #ffd60a 90%, transparent);
+  --dur: 0.55s; --o1: 0.75; --o2: 0.95;
+  animation-delay: -0.4s;
+}
+.flame.f4 {
+  left: 20%; width: 40px; height: 70px;
+  background: linear-gradient(to top, #e63946, #ff6b35 50%, rgba(255,165,0,0.5));
+  --dur: 0.65s;
+  animation-delay: -0.15s;
+}
+.flame.f5 {
+  right: 15%; width: 35px; height: 60px;
+  background: linear-gradient(to top, #e63946, #ff4500 60%, rgba(255,107,53,0.4));
+  --dur: 0.8s;
+  animation-delay: -0.3s;
+}
+/* Inner core glow */
+.flame.core {
+  left: 50%; transform: translateX(-50%);
+  width: 40px; height: 80px; bottom: 10px;
+  background: linear-gradient(to top, #fff5, #ffd60a 40%, rgba(255,165,0,0.3));
+  --dur: 0.4s;
+  filter: blur(4px);
+}
+
+/* Ember / floating particles */
+.ember {
+  position: absolute; width: 4px; height: 4px;
+  background: var(--amber);
+  border-radius: 50%;
+  animation: emberFloat var(--edur, 2s) ease-out infinite;
+  opacity: 0;
+}
+@keyframes emberFloat {
+  0% { opacity: 0; transform: translateY(0) translateX(0); }
+  10% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-180px) translateX(var(--ex, 30px)); }
+}
+
+/* Smoke */
+.smoke-particle {
+  position: absolute; border-radius: 50%;
+  background: rgba(80,80,80,0.4);
+  animation: smokeRise var(--sdur, 3s) ease-out infinite;
+  opacity: 0;
+  filter: blur(8px);
+}
+@keyframes smokeRise {
+  0% { opacity: 0; transform: translateY(0) scale(0.5); }
+  15% { opacity: 0.3; }
+  100% { opacity: 0; transform: translateY(-300px) translateX(var(--smx, 20px)) scale(2); }
+}
+
+/* Electric arc effect */
+.arc {
+  position: absolute;
+  width: 2px; height: 40px;
+  background: linear-gradient(to bottom, var(--blue-spark), transparent);
+  animation: arcFlash 0.15s ease-in-out infinite;
+  transform-origin: top center;
+  filter: blur(1px);
+  box-shadow: 0 0 10px var(--blue-spark);
+}
+@keyframes arcFlash {
+  0% { opacity: 0; transform: scaleY(0) rotate(0deg); }
+  50% { opacity: 1; transform: scaleY(1) rotate(var(--ar, 5deg)); }
+  100% { opacity: 0; transform: scaleY(0.5) rotate(var(--ar2, -3deg)); }
+}
+
+/* ============================================ */
+/* SCENE INFO / ALERT */
+/* ============================================ */
+.scene-info {
+  position: absolute; top: 20px; left: 30px; z-index: 20;
+}
+.scene-alert {
+  font-family: 'Orbitron', monospace;
+  font-size: 14px; font-weight: 700;
+  color: var(--red);
+  letter-spacing: 4px; text-transform: uppercase;
+  animation: alertBlink 0.8s ease-in-out infinite;
+  margin-bottom: 8px;
+}
+@keyframes alertBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.scene-location {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 28px; font-weight: 700;
+  color: var(--white);
+  text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+}
+.scene-location-cn {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 18px; font-weight: 400;
+  color: var(--amber);
+  margin-top: 2px;
+}
+
+/* Fire class badge */
+.fire-class-badge {
+  position: absolute; top: 20px; right: 30px; z-index: 20;
+  background: rgba(15,15,26,0.85);
+  border: 1px solid rgba(230,57,70,0.4);
+  padding: 12px 20px;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+.fire-class-badge .label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11px; font-weight: 600;
+  color: var(--steel-dark);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.fire-class-badge .class-letter {
+  font-family: 'Orbitron', monospace;
+  font-size: 36px; font-weight: 900;
+  color: var(--red);
+  line-height: 1;
+}
+.fire-class-badge .class-desc {
+  font-size: 12px; color: var(--steel);
+  margin-top: 4px;
+}
+
+/* ============================================ */
+/* EXTINGUISHER SELECTION PANEL */
+/* ============================================ */
+.ext-panel {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  background: linear-gradient(to top, rgba(10,10,20,0.98), rgba(15,15,26,0.92));
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 16px 30px 20px;
+  backdrop-filter: blur(12px);
+  transform: translateY(100%);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ext-panel.visible { transform: translateY(0); }
+
+.ext-panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.ext-panel-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px; font-weight: 600;
+  color: var(--steel-dark);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+.ext-panel-hint {
+  font-size: 13px; color: var(--amber);
+  font-style: italic;
+}
+
+.ext-options {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+
+.ext-card {
+  background: rgba(255,255,255,0.04);
+  border: 2px solid rgba(255,255,255,0.08);
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.25s;
+  overflow: hidden;
+}
+.ext-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.03), transparent);
+  transition: opacity 0.3s;
+}
+.ext-card:hover {
+  border-color: rgba(255,255,255,0.25);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+.ext-card:hover::before { opacity: 0; }
+
+.ext-card.disabled {
+  pointer-events: none;
+  opacity: 0.3;
+}
+.ext-card.selected-best {
+  border-color: var(--green) !important;
+  background: rgba(6,214,160,0.1) !important;
+  box-shadow: 0 0 30px rgba(6,214,160,0.2);
+}
+.ext-card.selected-ok {
+  border-color: var(--amber) !important;
+  background: rgba(244,162,97,0.1) !important;
+}
+.ext-card.selected-wrong {
+  border-color: var(--red) !important;
+  background: rgba(230,57,70,0.1) !important;
+}
+.ext-card.selected-danger {
+  border-color: var(--red) !important;
+  background: rgba(230,57,70,0.2) !important;
+  animation: dangerCardPulse 0.5s ease;
+}
+@keyframes dangerCardPulse {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.05); }
+  50% { transform: scale(0.98); }
+  75% { transform: scale(1.02); }
+}
+
+/* Extinguisher visual within card */
+.ext-visual {
+  width: 36px; height: 72px;
+  margin: 0 auto 10px;
+  position: relative;
+  border-radius: 6px 6px 3px 3px;
+}
+.ext-visual::before {
+  content: '';
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  width: 10px; height: 13px;
+  background: #555;
+  border-radius: 2px 2px 0 0;
+}
+.ext-visual::after {
+  content: '';
+  position: absolute; top: -5px; right: -11px;
+  width: 14px; height: 5px;
+  background: #555;
+  border-radius: 0 3px 3px 0;
+  transform: rotate(-15deg);
+}
+.ext-visual.water { background: linear-gradient(135deg, #c0c0c0, #e0e0e0, #c0c0c0); }
+.ext-visual.foam { background: linear-gradient(135deg, #d4c5a0, #ebe0c8, #d4c5a0); }
+.ext-visual.co2 {
+  background: linear-gradient(135deg, #222, #3a3a3a, #222);
+}
+.ext-visual.co2::after {
+  width: 18px; height: 8px; right: -15px;
+  background: linear-gradient(to right, #444, #333);
+  border-radius: 0 50% 50% 0;
+}
+.ext-visual.powder { background: linear-gradient(135deg, #b22, var(--red), #b22); }
+.ext-visual.wetchem { background: linear-gradient(135deg, #c4a800, #e6cc00, #c4a800); }
+.ext-visual.metalD { background: linear-gradient(135deg, #2a4a7a, #3a6aaa, #2a4a7a); }
+
+.ext-card .ext-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px; font-weight: 700;
+  color: var(--white);
+  margin-bottom: 2px;
+}
+.ext-card .ext-name-cn {
+  font-size: 12px; color: var(--steel-dark);
+}
+.ext-card .ext-classes {
+  font-family: 'Orbitron', monospace;
+  font-size: 10px; color: var(--amber);
+  margin-top: 6px; letter-spacing: 1px;
+  display: none;
+}
+
+/* Result badge on card */
+.ext-result-badge {
+  position: absolute; top: 8px; right: 8px;
+  font-family: 'Orbitron', monospace;
+  font-size: 9px; font-weight: 700;
+  padding: 3px 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.ext-result-badge.visible { opacity: 1; }
+.ext-result-badge.best { background: var(--green); color: var(--charcoal-deep); }
+.ext-result-badge.ok { background: var(--amber); color: var(--charcoal-deep); }
+.ext-result-badge.wrong { background: var(--red); color: var(--white); }
+
+/* ============================================ */
+/* RESULT OVERLAY */
+/* ============================================ */
+.result-overlay {
+  position: absolute; inset: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(10,10,20,0.8);
+  backdrop-filter: blur(4px);
+  opacity: 0; transition: opacity 0.5s;
+  pointer-events: none;
+}
+.result-overlay.visible { opacity: 1; pointer-events: auto; }
+
+.result-card {
+  background: linear-gradient(135deg, rgba(20,20,35,0.98), rgba(25,25,40,0.95));
+  border: 1px solid rgba(255,255,255,0.1);
+  max-width: 520px; width: 90%;
+  padding: 40px;
+  text-align: center;
+  transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+}
+.result-overlay.visible .result-card { transform: scale(1); }
+.result-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  border-radius: 2px 2px 0 0;
+}
+.result-overlay.visible .result-card.success-card::before { background: var(--green); }
+.result-overlay.visible .result-card.partial-card::before { background: var(--amber); }
+.result-overlay.visible .result-card.fail-card::before { background: var(--red); }
+
+.result-icon {
+  font-size: 48px; margin-bottom: 16px;
+}
+.result-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 22px; font-weight: 800;
+  letter-spacing: 4px; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.result-title.success { color: var(--green); }
+.result-title.partial { color: var(--amber); }
+.result-title.fail { color: var(--red); }
+.result-title.danger { color: var(--red); animation: alertBlink 0.5s ease-in-out infinite; }
+
+.result-score {
+  font-family: 'Orbitron', monospace;
+  font-size: 16px; color: var(--amber);
+  margin-bottom: 16px;
+}
+.result-explanation {
+  font-size: 15px; line-height: 1.7;
+  color: var(--steel);
+  margin-bottom: 24px;
+}
+.result-explanation strong { color: var(--white); }
+
+.result-btn {
+  display: inline-block;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 16px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--charcoal-deep);
+  background: var(--amber);
+  border: none; padding: 14px 40px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.result-btn:hover {
+  background: var(--white);
+  box-shadow: 0 0 30px rgba(244,162,97,0.4);
+}
+
+/* ============================================ */
+/* DANGER OVERLAY (for water on electrical/grease) */
+/* ============================================ */
+.danger-overlay {
+  position: fixed; inset: 0; z-index: 9000;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(150,15,20,0.85);
+  backdrop-filter: blur(6px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.danger-overlay.visible { opacity: 1; pointer-events: auto; }
+
+.danger-content {
+  text-align: center; max-width: 550px; padding: 40px;
+}
+.danger-icon {
+  font-size: 80px; margin-bottom: 20px;
+  animation: dangerBounce 0.6s ease;
+}
+@keyframes dangerBounce {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+.danger-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 36px; font-weight: 900;
+  color: var(--white);
+  letter-spacing: 6px;
+  text-shadow: 0 0 30px rgba(230,57,70,0.8);
+  margin-bottom: 16px;
+}
+.danger-text {
+  font-size: 18px; line-height: 1.7;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 30px;
+}
+.danger-btn {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 16px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--white);
+  background: rgba(255,255,255,0.15);
+  border: 2px solid var(--white);
+  padding: 14px 40px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.danger-btn:hover { background: rgba(255,255,255,0.25); }
+
+/* ============================================ */
+/* P.A.S.S. TECHNIQUE PHASE */
+/* ============================================ */
+.pass-phase {
+  min-height: calc(100vh - 60px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px;
+}
+.pass-container {
+  max-width: 800px; width: 100%;
+  text-align: center;
+}
+.pass-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 28px; font-weight: 800;
+  color: var(--amber);
+  letter-spacing: 4px;
+  margin-bottom: 6px;
+}
+.pass-subtitle {
+  font-size: 16px; color: var(--steel);
+  margin-bottom: 36px;
+}
+.pass-ext-visual {
+  width: 60px; height: 120px;
+  margin: 0 auto 30px;
+  background: linear-gradient(135deg, #b22, var(--red), #b22);
+  border-radius: 10px 10px 5px 5px;
+  position: relative;
+  box-shadow: 0 0 40px rgba(230,57,70,0.3);
+  transition: all 0.5s;
+}
+.pass-ext-visual::before {
+  content: '';
+  position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+  width: 16px; height: 20px; background: #555;
+  border-radius: 4px 4px 0 0;
+}
+.pass-ext-visual::after {
+  content: '';
+  position: absolute; top: -8px; right: -18px;
+  width: 22px; height: 7px; background: #555;
+  border-radius: 0 5px 5px 0;
+  transform: rotate(-15deg);
+  transition: all 0.3s;
+}
+
+/* Spray animation */
+.spray-effect {
+  position: absolute; top: -8px; right: -80px;
+  width: 60px; height: 30px;
+  background: radial-gradient(ellipse at left, rgba(200,200,200,0.6) 0%, rgba(200,200,200,0) 70%);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: all 0.3s;
+}
+.pass-ext-visual.spraying .spray-effect {
+  opacity: 1;
+  transform: scaleX(1);
+  animation: sprayPulse 0.5s ease-in-out infinite alternate;
+}
+@keyframes sprayPulse {
+  0% { width: 60px; opacity: 0.4; }
+  100% { width: 90px; opacity: 0.7; }
+}
+
+.pass-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 30px;
+}
+
+.pass-step {
+  background: rgba(255,255,255,0.04);
+  border: 2px solid rgba(255,255,255,0.1);
+  padding: 24px 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+}
+.pass-step:hover:not(.done):not(.disabled) {
+  border-color: var(--amber);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+}
+.pass-step.active-next {
+  border-color: rgba(244,162,97,0.4);
+  animation: stepGlow 1.5s ease-in-out infinite;
+}
+@keyframes stepGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(244,162,97,0.1); }
+  50% { box-shadow: 0 0 20px rgba(244,162,97,0.3); }
+}
+.pass-step.done {
+  border-color: var(--green);
+  background: rgba(6,214,160,0.08);
+  pointer-events: none;
+}
+.pass-step.wrong-order {
+  animation: wrongShake 0.4s ease;
+  border-color: var(--red);
+}
+@keyframes wrongShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+.pass-step.disabled {
+  pointer-events: none; opacity: 0.3;
+}
+.pass-step-num {
+  font-family: 'Orbitron', monospace;
+  font-size: 28px; font-weight: 900;
+  color: var(--steel-dark);
+  margin-bottom: 8px;
+  transition: color 0.3s;
+}
+.pass-step.done .pass-step-num { color: var(--green); }
+.pass-step-letter {
+  font-family: 'Orbitron', monospace;
+  font-size: 20px; font-weight: 700;
+  color: var(--amber);
+  margin-bottom: 4px;
+}
+.pass-step-en {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 16px; font-weight: 600;
+  color: var(--white);
+}
+.pass-step-cn {
+  font-size: 13px; color: var(--steel-dark);
+  margin-top: 2px;
+}
+.pass-step .check {
+  position: absolute; top: 8px; right: 10px;
+  font-size: 18px; color: var(--green);
+  opacity: 0; transition: opacity 0.3s;
+}
+.pass-step.done .check { opacity: 1; }
+
+.pass-complete-msg {
+  margin-top: 30px;
+  font-family: 'Orbitron', monospace;
+  font-size: 18px; font-weight: 700;
+  color: var(--green);
+  letter-spacing: 3px;
+  opacity: 0; transition: opacity 0.5s;
+}
+.pass-complete-msg.visible { opacity: 1; }
+
+.pass-continue-btn {
+  display: inline-block;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 16px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--charcoal-deep);
+  background: var(--green);
+  border: none; padding: 14px 48px;
+  cursor: pointer; margin-top: 20px;
+  opacity: 0; transition: all 0.4s;
+}
+.pass-continue-btn.visible { opacity: 1; }
+.pass-continue-btn:hover {
+  background: var(--white);
+  box-shadow: 0 0 30px rgba(6,214,160,0.4);
+}
+
+/* ============================================ */
+/* FINAL REPORT */
+/* ============================================ */
+.report-phase {
+  min-height: calc(100vh - 60px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px;
+}
+.report-container {
+  max-width: 900px; width: 100%;
+}
+
+.report-header {
+  text-align: center; margin-bottom: 40px;
+}
+.report-grade {
+  font-family: 'Orbitron', monospace;
+  font-size: 96px; font-weight: 900;
+  line-height: 1;
+  margin-bottom: 12px;
+  animation: gradeReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes gradeReveal {
+  0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+  60% { transform: scale(1.2) rotate(5deg); }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+.report-grade.s-rank { color: #FFD700; text-shadow: 0 0 40px rgba(255,215,0,0.6); }
+.report-grade.a-rank { color: var(--green); text-shadow: 0 0 40px rgba(6,214,160,0.6); }
+.report-grade.b-rank { color: var(--amber); text-shadow: 0 0 30px rgba(244,162,97,0.5); }
+.report-grade.c-rank { color: var(--steel); }
+.report-grade.f-rank { color: var(--red); }
+
+.report-title-text {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 28px; font-weight: 700;
+  color: var(--white);
+  letter-spacing: 3px;
+}
+.report-title-cn {
+  font-size: 20px; color: var(--amber);
+  margin-top: 4px;
+}
+.report-total-score {
+  font-family: 'Orbitron', monospace;
+  font-size: 18px; color: var(--steel);
+  margin-top: 10px;
+}
+.report-total-score em {
+  font-style: normal; color: var(--amber); font-size: 24px;
+}
+
+/* Radar chart */
+.radar-section {
+  display: flex; align-items: center; justify-content: center;
+  gap: 40px; margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+.radar-canvas-wrap {
+  width: 320px; height: 320px;
+  position: relative;
+}
+#radarCanvas { width: 320px; height: 320px; }
+
+.report-breakdown {
+  flex: 1; min-width: 280px;
+}
+.breakdown-item {
+  display: flex; align-items: center; gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.breakdown-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px; font-weight: 600;
+  color: var(--steel);
+  width: 140px;
+}
+.breakdown-bar-bg {
+  flex: 1; height: 8px;
+  background: rgba(255,255,255,0.08);
+  position: relative; overflow: hidden;
+}
+.breakdown-bar {
+  height: 100%;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 0;
+}
+.breakdown-bar.green { background: var(--green); }
+.breakdown-bar.amber { background: var(--amber); }
+.breakdown-bar.red { background: var(--red); }
+.breakdown-score {
+  font-family: 'Orbitron', monospace;
+  font-size: 14px; font-weight: 700;
+  color: var(--white);
+  min-width: 50px; text-align: right;
+}
+
+/* Scenario cards in report */
+.report-scenarios {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 16px; margin-bottom: 32px;
+}
+.report-scenario-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 20px;
+}
+.report-scenario-card .sc-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px; font-weight: 700;
+  color: var(--amber);
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.report-scenario-card .sc-result {
+  font-size: 14px; color: var(--steel);
+  line-height: 1.5;
+}
+.report-scenario-card .sc-points {
+  font-family: 'Orbitron', monospace;
+  font-size: 20px; font-weight: 700;
+  margin-top: 8px;
+}
+.report-scenario-card .sc-points.best { color: var(--green); }
+.report-scenario-card .sc-points.ok { color: var(--amber); }
+.report-scenario-card .sc-points.fail { color: var(--red); }
+
+.report-retry-btn {
+  display: block; margin: 0 auto;
+  font-family: 'Orbitron', monospace;
+  font-size: 15px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--charcoal-deep);
+  background: var(--amber);
+  border: none; padding: 16px 56px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.report-retry-btn:hover {
+  background: var(--white);
+  box-shadow: 0 0 40px rgba(244,162,97,0.5);
+}
+
+/* ============================================ */
+/* ANIMATIONS FOR PHASE TRANSITIONS */
+/* ============================================ */
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ============================================ */
+/* CLASSIFY PANEL (Step 1: identify fire class) */
+/* ============================================ */
+.classify-panel {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  background: linear-gradient(to top, rgba(10,10,20,0.98), rgba(15,15,26,0.92));
+  border-top: 1px solid rgba(244,162,97,0.2);
+  padding: 16px 30px 20px;
+  backdrop-filter: blur(12px);
+  transform: translateY(100%);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.classify-panel.visible { transform: translateY(0); }
+
+.classify-panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.classify-panel-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px; font-weight: 600;
+  color: var(--amber);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+.classify-panel-subtitle {
+  font-size: 13px; color: var(--steel-dark);
+  font-style: italic;
+}
+
+.classify-options {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.classify-card {
+  background: rgba(255,255,255,0.04);
+  border: 2px solid rgba(255,255,255,0.08);
+  padding: 14px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.classify-card:hover {
+  border-color: rgba(244,162,97,0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+.classify-card .cc-letter {
+  font-family: 'Orbitron', monospace;
+  font-size: 28px; font-weight: 900;
+  color: var(--white);
+  line-height: 1;
+}
+.classify-card .cc-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px; font-weight: 600;
+  color: var(--steel-dark);
+  margin-top: 6px;
+  letter-spacing: 0.5px;
+}
+.classify-card.correct {
+  border-color: var(--green) !important;
+  background: rgba(6,214,160,0.1) !important;
+}
+.classify-card.correct .cc-letter { color: var(--green); }
+.classify-card.wrong-pick {
+  border-color: var(--red) !important;
+  background: rgba(230,57,70,0.1) !important;
+  animation: wrongShake 0.4s ease;
+}
+.classify-card.wrong-pick .cc-letter { color: var(--red); }
+.classify-card.disabled { pointer-events: none; opacity: 0.4; }
+
+/* Metal workshop scene bg */
+.scene-bg.metal-workshop {
+  background: linear-gradient(to bottom, #14141e 0%, #1a1a28 40%, #10101a 100%);
+}
+
+/* Metal fire has white-bright flames */
+.fire-container.metal-fire .flame.f1 {
+  background: linear-gradient(to top, #fff, #e0e0ff 40%, rgba(200,200,255,0.3)) !important;
+}
+.fire-container.metal-fire .flame.core {
+  background: linear-gradient(to top, #fff, #f0f0ff 50%, rgba(255,255,255,0.2)) !important;
+  filter: blur(3px);
+}
+.fire-container.metal-fire .flame.f2,
+.fire-container.metal-fire .flame.f3 {
+  background: linear-gradient(to top, #ddf, #ccf 40%, rgba(200,200,255,0.3)) !important;
+}
+.fire-container.metal-fire .flame.f4,
+.fire-container.metal-fire .flame.f5 {
+  background: linear-gradient(to top, #ff8, #ffa 40%, rgba(255,255,200,0.3)) !important;
+}
+
+/* ============================================ */
+/* RESPONSIVE */
+/* ============================================ */
+@media (max-width: 900px) {
+  .ext-options { grid-template-columns: repeat(3, 1fr); }
+  .classify-options { grid-template-columns: repeat(3, 1fr); }
+  .pass-steps { grid-template-columns: repeat(2, 1fr); }
+  .report-scenarios { grid-template-columns: 1fr; }
+  .welcome-title { font-size: 28px; letter-spacing: 3px; }
+  .welcome-subtitle { font-size: 18px; letter-spacing: 4px; }
+}
+@media (max-width: 600px) {
+  .ext-options { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- SVG Filters -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="fireDistort" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="turbulence" baseFrequency="0.02 0.08" numOctaves="3" seed="2" result="noise">
+        <animate attributeName="seed" from="1" to="10" dur="1s" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="12" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="heatHaze" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.01 0.04" numOctaves="2" seed="5" result="noise">
+        <animate attributeName="baseFrequency" values="0.01 0.04;0.015 0.06;0.01 0.04" dur="3s" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="5"/>
+    </filter>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="blur" in2="SourceGraphic" operator="over"/>
+    </filter>
+    <filter id="strongGlow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+</svg>
+
+<!-- Danger Flash -->
+<div id="dangerFlash"></div>
+<!-- Vignette -->
+<div id="vignette"></div>
+<!-- Danger Overlay -->
+<div class="danger-overlay" id="dangerOverlay">
+  <div class="danger-content">
+    <div class="danger-icon" id="dangerIcon">⚠️</div>
+    <div class="danger-title" id="dangerTitle">DANGER</div>
+    <div class="danger-text" id="dangerText"></div>
+    <button class="danger-btn" onclick="closeDanger()">UNDERSTOOD — CONTINUE</button>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app">
+
+  <!-- Welcome Screen -->
+  <div id="welcomeScreen">
+    <div class="emergency-lights"></div>
+    <div class="hazard-stripe top"></div>
+    <!-- Ambient smoke particles on welcome -->
+    <div class="welcome-smoke" id="welcomeSmoke"></div>
+    <!-- Scanning line effect -->
+    <div class="scan-line"></div>
+    <div class="welcome-content">
+      <div class="welcome-icon">
+        <div class="ext-body">
+          <div class="ext-label">FIRE EXT.</div>
+        </div>
+        <div class="welcome-fire-glow"></div>
+      </div>
+      <div class="welcome-classification">
+        <span class="wc-item">CLASS A</span>
+        <span class="wc-item">CLASS B</span>
+        <span class="wc-item">CLASS C</span>
+        <span class="wc-item">CLASS D</span>
+        <span class="wc-item">CLASS F</span>
+      </div>
+      <div class="welcome-title">FIRE RESPONSE<br>TRAINING</div>
+      <div class="welcome-subtitle">灭火器选择大挑战</div>
+      <div class="welcome-divider"></div>
+      <div class="welcome-brief">
+        You are the safety officer. When fire breaks out, you have <strong style="color:var(--amber)">seconds</strong> to choose the right extinguisher.<br>
+        Choose wrong — and the consequences are <strong style="color:var(--red)">severe</strong>.
+      </div>
+      <div class="welcome-stats">
+        <div class="ws-item"><div class="ws-num">5</div><div class="ws-label">SCENARIOS</div></div>
+        <div class="ws-item"><div class="ws-num">6</div><div class="ws-label">EXTINGUISHER<br>TYPES</div></div>
+        <div class="ws-item"><div class="ws-num">20s</div><div class="ws-label">PER<br>SCENARIO</div></div>
+      </div>
+      <button class="welcome-btn" onclick="startSimulation()">
+        <span class="btn-inner">ENTER SIMULATION</span>
+        <span class="btn-scan"></span>
+      </button>
+    </div>
+    <div class="hazard-stripe"></div>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-left">
+      <div class="hud-logo">🔥 FIRE RESPONSE</div>
+      <div class="hud-phase" id="hudPhase">SCENARIO 1/4</div>
+    </div>
+    <div class="hud-center" id="hudSteps">
+      <!-- filled by JS -->
+    </div>
+    <div class="hud-right">
+      <div class="hud-score" id="hudScore">0 <span>PTS</span></div>
+      <div class="hud-timer" id="hudTimer">15</div>
+    </div>
+  </div>
+
+  <!-- Game Area -->
+  <div id="gameArea" class="hidden">
+    <!-- Scenes injected here by JS -->
+  </div>
+
+  <!-- Classify Panel (Step 1) -->
+  <div class="classify-panel" id="classifyPanel">
+    <div class="classify-panel-header">
+      <div class="classify-panel-title">Step 1: Identify Fire Class 第一步：判断火灾类型</div>
+      <div class="classify-panel-subtitle">Look at the scene — what type of fire is this?</div>
+    </div>
+    <div class="classify-options" id="classifyOptions">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- Extinguisher Panel (Step 2) -->
+  <div class="ext-panel" id="extPanel">
+    <div class="ext-panel-header">
+      <div class="ext-panel-title">Step 2: Select Extinguisher 第二步：选择灭火器</div>
+      <div class="ext-panel-hint" id="extHint"></div>
+    </div>
+    <div class="ext-options" id="extOptions">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================================
+// GAME DATA
+// ============================================
+const EXTINGUISHERS = [
+  { id: 'water', name: 'Water', nameCn: '水基', cssClass: 'water' },
+  { id: 'foam', name: 'Foam', nameCn: '泡沫', cssClass: 'foam' },
+  { id: 'co2', name: 'CO₂', nameCn: '二氧化碳', cssClass: 'co2' },
+  { id: 'powder', name: 'Dry Powder', nameCn: '干粉', cssClass: 'powder' },
+  { id: 'wetchem', name: 'Wet Chemical', nameCn: '湿化学', cssClass: 'wetchem' },
+  { id: 'metalD', name: 'Class D Powder', nameCn: 'D类专用粉', cssClass: 'metalD' }
+];
+
+const SCENARIOS = [
+  {
+    id: 'paper',
+    name: 'Paper Storage Room',
+    nameCn: '纸张仓库',
+    fireClass: 'A',
+    fireClassDesc: 'Ordinary Combustibles',
+    bgClass: 'paper-room',
+    best: ['water'],
+    ok: ['foam', 'powder'],
+    wrong: ['co2', 'wetchem'],
+    danger: [],
+    hint: 'Stacked paper and cardboard boxes are ablaze...',
+    bestExplain: '<strong>Water</strong> is the most effective and appropriate choice for Class A fires (ordinary combustibles like paper, wood, cloth). It cools the burning material below its ignition temperature.',
+    okExplain: 'Foam and Dry Powder also work on Class A fires, but water is the simplest and most efficient choice for this type of fuel.',
+    wrongExplain: 'CO₂ lacks the cooling power needed for deep-seated Class A fires. Wet Chemical is designed exclusively for cooking oil fires (Class F).',
+    dangerExplain: '',
+    bestScore: 3, okScore: 1,
+    objects: 'paper'
+  },
+  {
+    id: 'electrical',
+    name: 'Electrical Panel Room',
+    nameCn: '配电房',
+    fireClass: 'C',
+    fireClassDesc: 'Electrical Equipment',
+    bgClass: 'electrical-room',
+    best: ['co2'],
+    ok: ['powder'],
+    wrong: ['foam', 'wetchem'],
+    danger: ['water'],
+    hint: 'Electrical panel sparking violently — HIGH VOLTAGE!',
+    bestExplain: '<strong>CO₂</strong> is ideal for electrical fires. It displaces oxygen without leaving residue, and — critically — does not conduct electricity. Safe for both the operator and equipment.',
+    okExplain: 'Dry Powder works but leaves corrosive residue on sensitive electronics, potentially causing more equipment damage.',
+    wrongExplain: 'Foam and Wet Chemical are conductive — using them near live electrical equipment is extremely dangerous.',
+    dangerExplain: '⚡ <strong>ELECTROCUTION RISK!</strong> Water conducts electricity. Spraying water on an energized electrical panel creates a direct path for current to reach you — potentially fatal. <em>Always de-energize before using water on electrical fires.</em>',
+    bestScore: 3, okScore: 1,
+    objects: 'electrical'
+  },
+  {
+    id: 'chemical',
+    name: 'Chemical Lab — Solvent Spill',
+    nameCn: '化学实验室 — 溶剂泄漏',
+    fireClass: 'B',
+    fireClassDesc: 'Flammable Liquids',
+    bgClass: 'chem-lab',
+    best: ['foam'],
+    ok: ['co2', 'powder'],
+    wrong: ['wetchem'],
+    danger: ['water'],
+    hint: 'Flammable solvent burning on the floor — spreading fast!',
+    bestExplain: '<strong>Foam</strong> creates a blanket over the liquid surface, cutting off oxygen supply and preventing reignition. It\'s the ideal choice for flammable liquid spills.',
+    okExplain: 'CO₂ and Dry Powder can suppress the flames but don\'t prevent reignition as effectively as foam\'s smothering blanket.',
+    wrongExplain: 'Wet Chemical is formulated for cooking oils (Class F) only and is not effective against industrial solvents.',
+    dangerExplain: '🌊 <strong>FIRE SPREAD!</strong> Water does not mix with flammable solvents — it causes the burning liquid to splash and spread, dramatically increasing the fire area. <em>Never use water on liquid fuel fires.</em>',
+    bestScore: 3, okScore: 1,
+    objects: 'chemical'
+  },
+  {
+    id: 'kitchen',
+    name: 'Kitchen — Deep Fryer Fire',
+    nameCn: '厨房油锅起火',
+    fireClass: 'F',
+    fireClassDesc: 'Cooking Oils & Fats',
+    bgClass: 'kitchen',
+    best: ['wetchem'],
+    ok: [],
+    wrong: ['foam', 'co2', 'powder'],
+    danger: ['water'],
+    hint: 'Deep fryer oil blazing — grease fire, extremely hot!',
+    bestExplain: '<strong>Wet Chemical</strong> is the ONLY correct choice for Class F fires. It undergoes saponification — a chemical reaction that turns burning oil into a non-combustible soap, sealing the surface.',
+    okExplain: '',
+    wrongExplain: 'Foam, CO₂, and Dry Powder cannot effectively suppress cooking oil fires. The oil temperature (>300°C) causes immediate reignition after suppression attempts.',
+    dangerExplain: '💥 <strong>GREASE EXPLOSION!</strong> Water instantly vaporizes when contacting oil at 300°C+, expanding 1,700× in volume. This creates a violent fireball that can cause severe burns and spread flaming oil across the entire kitchen. <em>NEVER put water on a grease fire.</em>',
+    bestScore: 3, okScore: 1,
+    objects: 'kitchen'
+  },
+  {
+    id: 'metal',
+    name: 'Metal Workshop — Magnesium Fire',
+    nameCn: '金属加工车间 — 镁金属起火',
+    fireClass: 'D',
+    fireClassDesc: 'Combustible Metals',
+    bgClass: 'metal-workshop',
+    best: ['metalD'],
+    ok: [],
+    wrong: ['foam', 'co2', 'powder', 'wetchem'],
+    danger: ['water'],
+    hint: 'Magnesium shavings ignited — burning white-hot!',
+    bestExplain: '<strong>Class D Powder</strong> (sodium chloride or copper-based) is specifically designed for metal fires. It smothers the burning metal and absorbs heat without reacting with the metal.',
+    okExplain: '',
+    wrongExplain: 'Standard extinguishers (Foam, CO₂, Dry Powder, Wet Chemical) are ineffective or dangerous on metal fires. They can cause violent reactions with burning metals.',
+    dangerExplain: '💥 <strong>VIOLENT EXPLOSION!</strong> Water reacts explosively with burning magnesium, producing hydrogen gas and extreme heat. The reaction temperature exceeds 3,000°C — enough to decompose water itself, creating a devastating hydrogen explosion. <em>NEVER use water on metal fires.</em>',
+    bestScore: 3, okScore: 1,
+    objects: 'metal'
+  }
+];
+
+const PASS_STEPS = [
+  { letter: 'P', en: 'Pull', cn: '拉保险销', desc: 'Pull the safety pin' },
+  { letter: 'A', en: 'Aim', cn: '瞄准火焰根部', desc: 'Aim at the base of the fire' },
+  { letter: 'S', en: 'Squeeze', cn: '压下把手', desc: 'Squeeze the handle' },
+  { letter: 'S', en: 'Sweep', cn: '扫射移动', desc: 'Sweep side to side' }
+];
+
+// ============================================
+// STATE
+// ============================================
+let state = {
+  currentScenario: 0,
+  score: 0,
+  maxScore: 29, // 5 scenarios × (2 classify + 3 best) + 4 PASS bonus
+  scenarioResults: [],
+  timerInterval: null,
+  timeLeft: 20,
+  phase: 'welcome', // welcome, classify, scenario, pass, report
+  passStep: 0,
+  passScore: 0,
+  dangerCallback: null,
+  classifyCorrect: 0
+};
+
+// ============================================
+// DOM REFS
+// ============================================
+const $ = id => document.getElementById(id);
+const hudPhase = $('hudPhase');
+const hudScore = $('hudScore');
+const hudTimer = $('hudTimer');
+const hudSteps = $('hudSteps');
+const extPanel = $('extPanel');
+const extOptions = $('extOptions');
+const extHint = $('extHint');
+const classifyPanel = $('classifyPanel');
+const classifyOptions = $('classifyOptions');
+const gameArea = $('gameArea');
+const vignette = $('vignette');
+const dangerFlash = $('dangerFlash');
+const dangerOverlay = $('dangerOverlay');
+
+// ============================================
+// WELCOME → START
+// ============================================
+function startSimulation() {
+  const welcome = $('welcomeScreen');
+  welcome.style.transition = 'opacity 0.6s, transform 0.6s';
+  welcome.style.opacity = '0';
+  welcome.style.transform = 'scale(1.05)';
+  setTimeout(() => {
+    welcome.classList.add('hidden');
+    $('hud').classList.add('visible');
+    gameArea.classList.remove('hidden');
+    buildHudSteps();
+    startScenario(0);
+  }, 600);
+}
+
+function buildHudSteps() {
+  let html = '';
+  for (let i = 0; i < SCENARIOS.length; i++) {
+    html += `<div class="hud-step" data-step="${i}"></div>`;
+    if (i < SCENARIOS.length - 1) html += '<div class="hud-step-label">›</div>';
+  }
+  html += '<div class="hud-step-label">›</div>';
+  html += '<div class="hud-step" data-step="pass" style="width:28px;background:rgba(255,255,255,0.08)"></div>';
+  html += '<div class="hud-step-label">›</div>';
+  html += '<div class="hud-step" data-step="report" style="width:28px;background:rgba(255,255,255,0.08)"></div>';
+  hudSteps.innerHTML = html;
+}
+
+function updateHudSteps() {
+  const steps = hudSteps.querySelectorAll('.hud-step');
+  steps.forEach(s => {
+    s.classList.remove('active', 'completed');
+    const idx = s.dataset.step;
+    if (idx === 'pass') {
+      if (state.phase === 'pass') s.classList.add('active');
+      else if (state.phase === 'report') s.classList.add('completed');
+    } else if (idx === 'report') {
+      if (state.phase === 'report') s.classList.add('active');
+    } else {
+      const n = parseInt(idx);
+      if (n < state.currentScenario) s.classList.add('completed');
+      else if (n === state.currentScenario && state.phase === 'scenario') s.classList.add('active');
+    }
+  });
+}
+
+// ============================================
+// SCENARIO LOGIC
+// ============================================
+const FIRE_CLASSES = [
+  { letter: 'A', name: 'Ordinary Combustibles', nameCn: '普通可燃物' },
+  { letter: 'B', name: 'Flammable Liquids', nameCn: '可燃液体' },
+  { letter: 'C', name: 'Electrical Equipment', nameCn: '电气设备' },
+  { letter: 'D', name: 'Combustible Metals', nameCn: '可燃金属' },
+  { letter: 'F', name: 'Cooking Oils & Fats', nameCn: '烹饪油脂' }
+];
+
+function startScenario(idx) {
+  state.currentScenario = idx;
+  state.phase = 'scenario';
+  state.timeLeft = 20;
+  const sc = SCENARIOS[idx];
+
+  hudPhase.textContent = `SCENARIO ${idx + 1}/${SCENARIOS.length}`;
+  updateHudSteps();
+
+  // Build scene — fire class badge shows "?" initially
+  gameArea.innerHTML = buildSceneHTML(sc);
+  gameArea.style.animation = 'fadeIn 0.3s ease';
+
+  // For metal fire, add special class
+  if (sc.objects === 'metal') {
+    const fc = document.getElementById('fireContainer');
+    if (fc) fc.classList.add('metal-fire');
+  }
+
+  // Start fire effects immediately (behind alert overlay)
+  startFireEffects(sc);
+
+  // Hide both panels
+  extPanel.classList.remove('visible');
+  classifyPanel.classList.remove('visible');
+
+  // Alert phase: 2 seconds
+  setTimeout(() => {
+    const alertOv = document.getElementById('alertOverlay');
+    if (alertOv) alertOv.classList.add('fade-out');
+    const sceneInfo = document.getElementById('sceneInfo');
+    if (sceneInfo) sceneInfo.style.opacity = '1';
+    // Show the "?" badge
+    const badge = document.getElementById('fireClassBadge');
+    if (badge) badge.style.opacity = '1';
+    vignette.classList.add('active');
+  }, 1800);
+
+  // Show classify panel (Step 1)
+  setTimeout(() => {
+    buildClassifyPanel(sc);
+    classifyPanel.classList.add('visible');
+    startTimer();
+  }, 2400);
+}
+
+function buildSceneHTML(sc) {
+  return `
+    <div class="fire-scene" id="fireScene">
+      <div class="scene-bg ${sc.bgClass}"></div>
+      <div class="scene-objects" id="sceneObjects">${buildSceneObjects(sc)}</div>
+      <div class="fire-base-glow"></div>
+      <div class="fire-container" id="fireContainer">
+        <div class="flame core"></div>
+        <div class="flame f1"></div>
+        <div class="flame f2"></div>
+        <div class="flame f3"></div>
+        <div class="flame f4"></div>
+        <div class="flame f5"></div>
+      </div>
+      <div class="fire-floor-glow"></div>
+      <div class="scene-info" style="opacity:0;transition:opacity 0.5s" id="sceneInfo">
+        <div class="scene-alert">🚨 FIRE ALERT</div>
+        <div class="scene-location">${sc.name}</div>
+        <div class="scene-location-cn">${sc.nameCn}</div>
+      </div>
+      <div class="fire-class-badge" style="opacity:0;transition:opacity 0.5s" id="fireClassBadge">
+        <div class="label">Fire Class</div>
+        <div class="class-letter" id="classLetterDisplay">?</div>
+        <div class="class-desc" id="classDescDisplay">Identify the type</div>
+      </div>
+      <div class="alert-overlay" id="alertOverlay">
+        <div class="alert-siren">🚨</div>
+        <div class="alert-location-name">${sc.name}</div>
+        <div class="alert-class-indicator">FIRE CLASS ${sc.fireClass} — ${sc.fireClassDesc}</div>
+      </div>
+      <div class="result-overlay" id="resultOverlay">
+        <div class="result-card">
+          <div class="result-icon" id="resultIcon"></div>
+          <div class="result-title" id="resultTitle"></div>
+          <div class="result-score" id="resultScore"></div>
+          <div class="result-explanation" id="resultExplain"></div>
+          <button class="result-btn" id="resultBtn" onclick="nextStep()">NEXT →</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function buildSceneObjects(sc) {
+  if (sc.objects === 'paper') {
+    return `
+      <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0px,transparent 60px,rgba(139,90,43,0.06) 60px,rgba(139,90,43,0.06) 62px),repeating-linear-gradient(90deg,transparent 0px,transparent 80px,rgba(139,90,43,0.04) 80px,rgba(139,90,43,0.04) 82px)"></div>
+      <!-- Shelving unit left -->
+      <div style="position:absolute;left:15%;bottom:10%;width:160px;height:200px;background:linear-gradient(135deg,#5a3a1a,#6b4420);border:2px solid #4a2a10;border-radius:2px">
+        <div style="position:absolute;top:30%;left:0;right:0;height:2px;background:#4a2a10"></div>
+        <div style="position:absolute;top:60%;left:0;right:0;height:2px;background:#4a2a10"></div>
+      </div>
+      <!-- Boxes on shelf -->
+      <div style="position:absolute;left:16%;bottom:calc(10% + 124px);width:70px;height:45px;background:linear-gradient(135deg,#B8860B,#DAA520);border:1px solid rgba(0,0,0,0.2)"></div>
+      <div style="position:absolute;left:22%;bottom:calc(10% + 130px);width:60px;height:40px;background:linear-gradient(135deg,#8B7355,#A0926A);border:1px solid rgba(0,0,0,0.2)"></div>
+      <div style="position:absolute;left:17%;bottom:calc(10% + 60px);width:80px;height:50px;background:linear-gradient(135deg,#B8860B,#CD950C);border:1px solid rgba(0,0,0,0.2)"></div>
+      <!-- Stack center -->
+      <div style="position:absolute;left:42%;bottom:12%;width:100px;height:70px;background:linear-gradient(135deg,#8B6914,#A57D1E);border:1px solid rgba(0,0,0,0.3)"></div>
+      <div style="position:absolute;left:44%;bottom:calc(12% + 65px);width:90px;height:55px;background:linear-gradient(135deg,#9B7920,#B08C2A);border:1px solid rgba(0,0,0,0.25)"></div>
+      <div style="position:absolute;left:46%;bottom:calc(12% + 115px);width:75px;height:48px;background:linear-gradient(135deg,#8B6914,#A57D1E);border:1px solid rgba(0,0,0,0.2)"></div>
+      <!-- Shelving right -->
+      <div style="position:absolute;right:12%;bottom:10%;width:140px;height:180px;background:linear-gradient(135deg,#5a3a1a,#6b4420);border:2px solid #4a2a10;border-radius:2px">
+        <div style="position:absolute;top:33%;left:0;right:0;height:2px;background:#4a2a10"></div>
+        <div style="position:absolute;top:66%;left:0;right:0;height:2px;background:#4a2a10"></div>
+      </div>
+      <div style="position:absolute;right:14%;bottom:calc(10% + 120px);width:65px;height:42px;background:linear-gradient(135deg,#CD853F,#DEB887);border:1px solid rgba(0,0,0,0.15)"></div>
+      <!-- Concrete floor -->
+      <div style="position:absolute;bottom:0;left:0;right:0;height:10%;background:linear-gradient(to top,#2a2218,#1f1a12)"></div>
+    `;
+  }
+  if (sc.objects === 'electrical') {
+    return `
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,20,40,0.5),transparent 30%)"></div>
+      <!-- Main panel -->
+      <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-55%);width:220px;height:300px;background:linear-gradient(135deg,#3a3a4a,#4a4a5a,#3a3a4a);border:3px solid #555;border-radius:4px;box-shadow:0 0 40px rgba(76,201,240,0.1)">
+        <!-- Warning label -->
+        <div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);font-family:Orbitron,monospace;font-size:8px;font-weight:700;color:var(--amber);letter-spacing:1px;background:#1a1a2e;padding:3px 10px;white-space:nowrap">⚡ HIGH VOLTAGE ⚡</div>
+        <!-- Indicator lights row 1 -->
+        <div style="position:absolute;top:40px;left:15px;display:flex;gap:8px">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);animation:panelBlink 0.3s ease-in-out infinite alternate"></div>
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);animation:panelBlink 0.3s 0.1s ease-in-out infinite alternate"></div>
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber);animation:panelBlink 0.5s 0.2s ease-in-out infinite alternate"></div>
+        </div>
+        <!-- Breaker rows -->
+        <div style="position:absolute;top:70px;left:15px;right:15px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+          ${Array(9).fill(0).map((_,i) => `<div style="height:24px;background:#2a2a3a;border:1px solid #444;border-radius:2px;position:relative"><div style="position:absolute;top:3px;left:50%;transform:translateX(-50%);width:8px;height:12px;background:#333;border-radius:1px;border:1px solid #555"></div></div>`).join('')}
+        </div>
+        <!-- Cable tray bottom -->
+        <div style="position:absolute;bottom:15px;left:10px;right:10px;height:60px;background:linear-gradient(135deg,#2a2a3a,#333);border:1px solid #444;border-radius:2px">
+          <div style="position:absolute;top:10px;left:8px;right:8px;display:flex;gap:4px">
+            ${Array(6).fill(0).map((_,i) => `<div style="flex:1;height:6px;background:${['#c33','#33c','#3a3','#cc3','#c33','#33c'][i]};border-radius:1px;opacity:0.7"></div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <!-- Side panels -->
+      <div style="position:absolute;left:18%;top:50%;transform:translateY(-55%);width:80px;height:200px;background:linear-gradient(135deg,#333,#3a3a4a);border:2px solid #444;border-radius:3px"></div>
+      <div style="position:absolute;right:18%;top:50%;transform:translateY(-55%);width:80px;height:200px;background:linear-gradient(135deg,#333,#3a3a4a);border:2px solid #444;border-radius:3px"></div>
+      <!-- Floor -->
+      <div style="position:absolute;bottom:0;left:0;right:0;height:12%;background:linear-gradient(to top,#0a0a15,transparent)"></div>
+    `;
+  }
+  if (sc.objects === 'chemical') {
+    return `
+      <!-- Lab bench -->
+      <div style="position:absolute;left:15%;right:15%;bottom:15%;height:80px;background:linear-gradient(to bottom,#404048,#35353d);border-top:3px solid #555;border-radius:0 0 4px 4px">
+        <div style="position:absolute;bottom:0;left:20px;width:12px;height:30px;background:#333;border-radius:0 0 2px 2px"></div>
+        <div style="position:absolute;bottom:0;right:20px;width:12px;height:30px;background:#333;border-radius:0 0 2px 2px"></div>
+      </div>
+      <!-- Bottles -->
+      <div style="position:absolute;left:20%;bottom:calc(15% + 80px);width:28px;height:50px;background:linear-gradient(to right,#2255aa,#3377cc);border-radius:6px 6px 2px 2px;border:1px solid rgba(255,255,255,0.1)">
+        <div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:12px;height:10px;background:#2255aa;border-radius:2px 2px 0 0;opacity:0.8"></div>
+      </div>
+      <div style="position:absolute;left:26%;bottom:calc(15% + 80px);width:24px;height:42px;background:linear-gradient(to right,#aa3322,#cc5544);border-radius:5px 5px 2px 2px;border:1px solid rgba(255,255,255,0.1)">
+        <div style="position:absolute;top:-7px;left:50%;transform:translateX(-50%);width:10px;height:9px;background:#aa3322;border-radius:2px 2px 0 0"></div>
+      </div>
+      <div style="position:absolute;right:22%;bottom:calc(15% + 80px);width:26px;height:46px;background:linear-gradient(to right,#22aa55,#44cc77);border-radius:5px 5px 2px 2px;border:1px solid rgba(255,255,255,0.1)">
+        <div style="position:absolute;top:-7px;left:50%;transform:translateX(-50%);width:10px;height:9px;background:#22aa55;border-radius:2px 2px 0 0"></div>
+      </div>
+      <div style="position:absolute;right:28%;bottom:calc(15% + 80px);width:20px;height:36px;background:linear-gradient(to right,#aa7722,#cc9944);border-radius:4px 4px 2px 2px;border:1px solid rgba(255,255,255,0.1)"></div>
+      <!-- Spill on floor -->
+      <div style="position:absolute;bottom:8%;left:30%;right:30%;height:12px;background:radial-gradient(ellipse,rgba(140,80,0,0.5),rgba(200,100,0,0.3),transparent);border-radius:50%;filter:blur(4px)"></div>
+      <!-- Biohazard label -->
+      <div style="position:absolute;top:15%;right:10%;font-family:Rajdhani,sans-serif;font-size:10px;font-weight:700;color:var(--amber);letter-spacing:2px;padding:4px 10px;border:1px solid var(--amber);opacity:0.5">⚠ FLAMMABLE</div>
+      <!-- Floor -->
+      <div style="position:absolute;bottom:0;left:0;right:0;height:8%;background:linear-gradient(to top,#121218,transparent)"></div>
+    `;
+  }
+  if (sc.objects === 'kitchen') {
+    return `
+      <!-- Tile wall -->
+      <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0px,transparent 48px,rgba(255,255,255,0.02) 48px,rgba(255,255,255,0.02) 50px),repeating-linear-gradient(90deg,transparent 0px,transparent 48px,rgba(255,255,255,0.02) 48px,rgba(255,255,255,0.02) 50px)"></div>
+      <!-- Hood/vent above -->
+      <div style="position:absolute;top:8%;left:30%;right:30%;height:50px;background:linear-gradient(to bottom,#555,#444);border:2px solid #666;border-radius:0 0 4px 4px;box-shadow:0 4px 20px rgba(0,0,0,0.3)"></div>
+      <!-- Stove/counter -->
+      <div style="position:absolute;left:20%;right:20%;bottom:15%;height:90px;background:linear-gradient(to bottom,#505050,#404040);border-top:3px solid #666;border-radius:2px">
+        <!-- Burner grates -->
+        <div style="position:absolute;top:8px;left:15%;width:50px;height:50px;border:3px solid #333;border-radius:50%"></div>
+        <div style="position:absolute;top:8px;right:15%;width:50px;height:50px;border:3px solid #333;border-radius:50%"></div>
+      </div>
+      <!-- Deep fryer (center) -->
+      <div style="position:absolute;left:50%;transform:translateX(-50%);bottom:calc(15% + 90px);width:120px;height:70px;background:linear-gradient(to bottom,#606060,#484848);border:2px solid #6a6a6a;border-radius:4px 4px 0 0;box-shadow:0 0 20px rgba(255,100,0,0.2)">
+        <div style="position:absolute;top:12px;left:10px;right:10px;bottom:0;background:linear-gradient(to bottom,#3a2000,#5a3000);border-radius:2px;overflow:hidden">
+          <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(255,150,0,0.3),rgba(200,80,0,0.2));animation:oilShimmer 2s ease-in-out infinite"></div>
+        </div>
+        <!-- Handle -->
+        <div style="position:absolute;top:-8px;right:-20px;width:24px;height:6px;background:#555;border-radius:3px"></div>
+      </div>
+      <!-- Pots on side -->
+      <div style="position:absolute;left:24%;bottom:calc(15% + 90px);width:50px;height:35px;background:linear-gradient(to bottom,#555,#3a3a3a);border-radius:3px 3px 0 0;border:1px solid #666"></div>
+      <div style="position:absolute;right:22%;bottom:calc(15% + 90px);width:60px;height:40px;background:linear-gradient(to bottom,#555,#3a3a3a);border-radius:3px 3px 0 0;border:1px solid #666"></div>
+      <!-- Floor -->
+      <div style="position:absolute;bottom:0;left:0;right:0;height:15%;background:linear-gradient(to top,#1a1510,transparent)"></div>
+    `;
+  }
+  if (sc.objects === 'metal') {
+    return `
+      <!-- Industrial wall -->
+      <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0px,transparent 80px,rgba(255,255,255,0.015) 80px,rgba(255,255,255,0.015) 82px)"></div>
+      <!-- Lathe / CNC machine left -->
+      <div style="position:absolute;left:10%;bottom:12%;width:180px;height:150px;background:linear-gradient(135deg,#2a2a35,#353540);border:2px solid #444;border-radius:4px">
+        <div style="position:absolute;top:8px;left:8px;font-family:Rajdhani,sans-serif;font-size:9px;font-weight:700;color:var(--steel-dark);letter-spacing:1px">CNC-400</div>
+        <div style="position:absolute;top:30px;left:10px;right:10px;height:60px;background:#1a1a22;border:1px solid #333;border-radius:2px"></div>
+        <div style="position:absolute;bottom:10px;left:15px;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)"></div>
+      </div>
+      <!-- Workbench with metal shavings -->
+      <div style="position:absolute;left:35%;right:20%;bottom:12%;height:70px;background:linear-gradient(to bottom,#404048,#35353d);border-top:3px solid #555">
+        <div style="position:absolute;bottom:0;left:15px;width:10px;height:25px;background:#333"></div>
+        <div style="position:absolute;bottom:0;right:15px;width:10px;height:25px;background:#333"></div>
+      </div>
+      <!-- Metal shavings scattered -->
+      <div style="position:absolute;left:42%;bottom:calc(12% + 70px);width:100px;height:20px;background:repeating-linear-gradient(135deg,rgba(180,180,200,0.3) 0px,transparent 3px,transparent 6px);border-radius:2px"></div>
+      <!-- Gas tanks -->
+      <div style="position:absolute;right:10%;bottom:12%;width:30px;height:100px;background:linear-gradient(to right,#2a5a2a,#3a7a3a);border-radius:8px 8px 4px 4px;border:1px solid #555">
+        <div style="position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:10px;height:8px;background:#555;border-radius:2px"></div>
+      </div>
+      <div style="position:absolute;right:14%;bottom:12%;width:30px;height:90px;background:linear-gradient(to right,#5a2a2a,#7a3a3a);border-radius:8px 8px 4px 4px;border:1px solid #555">
+        <div style="position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:10px;height:8px;background:#555;border-radius:2px"></div>
+      </div>
+      <!-- Warning sign -->
+      <div style="position:absolute;top:10%;left:15%;font-family:Rajdhani,sans-serif;font-size:10px;font-weight:700;color:var(--amber);letter-spacing:2px;padding:4px 10px;border:1px solid var(--amber);opacity:0.5">⚠ COMBUSTIBLE METALS</div>
+      <!-- Sparks indicator -->
+      <div style="position:absolute;top:10%;right:10%;font-family:Rajdhani,sans-serif;font-size:10px;font-weight:700;color:var(--red);letter-spacing:1px;padding:4px 10px;border:1px solid var(--red);opacity:0.6;animation:alertBlink 1s ease-in-out infinite">🔥 MAGNESIUM</div>
+      <!-- Floor -->
+      <div style="position:absolute;bottom:0;left:0;right:0;height:12%;background:linear-gradient(to top,#10101a,transparent)"></div>
+    `;
+  }
+  return '';
+}
+
+// Fire effects (embers + smoke)
+let fireEffectsInterval, fireEffectsInterval2;
+function startFireEffects(sc) {
+  clearInterval(fireEffectsInterval);
+  clearInterval(fireEffectsInterval2);
+  const container = document.getElementById('fireContainer');
+  const scene = document.getElementById('fireScene');
+  if (!container || !scene) return;
+
+  // Main ember/smoke loop
+  fireEffectsInterval = setInterval(() => {
+    // Ember
+    const ember = document.createElement('div');
+    ember.className = 'ember';
+    ember.style.left = (25 + Math.random() * 50) + '%';
+    ember.style.bottom = '20%';
+    ember.style.setProperty('--edur', (1.2 + Math.random() * 1.8) + 's');
+    ember.style.setProperty('--ex', (-50 + Math.random() * 100) + 'px');
+    ember.style.animationDelay = (Math.random() * 0.3) + 's';
+    ember.style.width = ember.style.height = (2 + Math.random() * 4) + 'px';
+    container.appendChild(ember);
+    setTimeout(() => ember.remove(), 3500);
+
+    // Second ember
+    if (Math.random() > 0.3) {
+      const e2 = ember.cloneNode();
+      e2.style.left = (20 + Math.random() * 60) + '%';
+      e2.style.setProperty('--ex', (-60 + Math.random() * 120) + 'px');
+      container.appendChild(e2);
+      setTimeout(() => e2.remove(), 3500);
+    }
+  }, 120);
+
+  // Smoke loop (separate for less coupling)
+  fireEffectsInterval2 = setInterval(() => {
+    const smoke = document.createElement('div');
+    smoke.className = 'smoke-particle';
+    smoke.style.width = smoke.style.height = (25 + Math.random() * 40) + 'px';
+    smoke.style.left = (15 + Math.random() * 70) + '%';
+    smoke.style.bottom = '50%';
+    smoke.style.setProperty('--sdur', (2.5 + Math.random() * 2) + 's');
+    smoke.style.setProperty('--smx', (-40 + Math.random() * 80) + 'px');
+    container.appendChild(smoke);
+    setTimeout(() => smoke.remove(), 5000);
+
+    // Sparks for electrical
+    if (sc.objects === 'electrical') {
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+          const spark = document.createElement('div');
+          spark.className = 'spark';
+          spark.style.left = (35 + Math.random() * 30) + '%';
+          spark.style.top = (25 + Math.random() * 40) + '%';
+          spark.style.setProperty('--sx', (-40 + Math.random() * 80) + 'px');
+          spark.style.setProperty('--sy', (-50 + Math.random() * 30) + 'px');
+          spark.style.width = spark.style.height = (2 + Math.random() * 5) + 'px';
+          scene.appendChild(spark);
+          setTimeout(() => spark.remove(), 500);
+        }, i * 80);
+      }
+    }
+  }, 350);
+}
+
+// ============================================
+// TIMER
+// ============================================
+function startTimer() {
+  clearInterval(state.timerInterval);
+  state.timeLeft = 20;
+  hudTimer.textContent = '20';
+  hudTimer.classList.remove('urgent');
+
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    hudTimer.textContent = state.timeLeft;
+    if (state.timeLeft <= 5) hudTimer.classList.add('urgent');
+    if (state.timeLeft <= 0) {
+      clearInterval(state.timerInterval);
+      // Check if we're still on classify step
+      if (classifyPanel.classList.contains('visible')) {
+        classifyPanel.classList.remove('visible');
+        // Store empty classify result
+        state.scenarioResults[state.currentScenario] = {
+          classifyCorrect: false,
+          classifyChosen: null
+        };
+      }
+      if (extPanel.classList.contains('visible')) {
+        handleChoice(null);
+      } else {
+        // Timer ran out during classify → also skip ext
+        handleChoice(null);
+      }
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(state.timerInterval);
+  hudTimer.classList.remove('urgent');
+}
+
+// ============================================
+// CLASSIFY PANEL (Step 1)
+// ============================================
+function buildClassifyPanel(sc) {
+  let html = '';
+  FIRE_CLASSES.forEach(fc => {
+    html += `
+      <div class="classify-card" data-class="${fc.letter}" onclick="handleClassify('${fc.letter}')">
+        <div class="cc-letter">${fc.letter}</div>
+        <div class="cc-name">${fc.name}<br>${fc.nameCn}</div>
+      </div>
+    `;
+  });
+  classifyOptions.innerHTML = html;
+}
+
+function handleClassify(chosen) {
+  const sc = SCENARIOS[state.currentScenario];
+  const correct = sc.fireClass;
+  const isCorrect = chosen === correct;
+
+  // Disable all classify cards
+  const cards = classifyOptions.querySelectorAll('.classify-card');
+  cards.forEach(c => {
+    c.classList.add('disabled');
+    if (c.dataset.class === correct) c.classList.add('correct');
+    if (c.dataset.class === chosen && !isCorrect) c.classList.add('wrong-pick');
+  });
+
+  // Update the fire class badge to show the real answer
+  const letterEl = document.getElementById('classLetterDisplay');
+  const descEl = document.getElementById('classDescDisplay');
+  if (letterEl) {
+    letterEl.textContent = correct;
+    letterEl.style.color = isCorrect ? 'var(--green)' : 'var(--red)';
+  }
+  if (descEl) descEl.textContent = sc.fireClassDesc;
+
+  // Award points
+  if (isCorrect) {
+    state.score += 2;
+    state.classifyCorrect++;
+    hudScore.innerHTML = `${state.score} <span>PTS</span>`;
+    triggerFlash('green');
+  } else {
+    triggerFlash('red');
+  }
+
+  // Store classification result for report
+  if (!state.scenarioResults[state.currentScenario]) {
+    state.scenarioResults[state.currentScenario] = {};
+  }
+  state.scenarioResults[state.currentScenario].classifyCorrect = isCorrect;
+  state.scenarioResults[state.currentScenario].classifyChosen = chosen;
+
+  // Transition: hide classify panel → show ext panel after delay
+  setTimeout(() => {
+    classifyPanel.classList.remove('visible');
+    setTimeout(() => {
+      buildExtPanel(sc);
+      extPanel.classList.add('visible');
+    }, 400);
+  }, 1000);
+}
+
+// ============================================
+// EXTINGUISHER PANEL (Step 2)
+// ============================================
+function buildExtPanel(sc) {
+  extHint.textContent = sc.hint;
+  let html = '';
+  EXTINGUISHERS.forEach(ext => {
+    html += `
+      <div class="ext-card" data-ext="${ext.id}" onclick="handleChoice('${ext.id}')">
+        <div class="ext-result-badge" id="badge-${ext.id}"></div>
+        <div class="ext-visual ${ext.cssClass}"></div>
+        <div class="ext-name">${ext.name}</div>
+        <div class="ext-name-cn">${ext.nameCn}</div>
+      </div>
+    `;
+  });
+  extOptions.innerHTML = html;
+}
+
+// ============================================
+// HANDLE CHOICE
+// ============================================
+function handleChoice(extId) {
+  stopTimer();
+  const sc = SCENARIOS[state.currentScenario];
+  const fireContainer = document.getElementById('fireContainer');
+
+  let resultType, pts, explain;
+
+  if (!extId) {
+    // Time ran out
+    resultType = 'fail';
+    pts = 0;
+    explain = 'Time ran out! In a real fire, hesitation can be fatal. The best choice was: ' + sc.bestExplain;
+  } else if (sc.danger.includes(extId)) {
+    resultType = 'danger';
+    pts = -1;
+    explain = sc.dangerExplain;
+  } else if (sc.best.includes(extId)) {
+    resultType = 'best';
+    pts = sc.bestScore;
+    explain = sc.bestExplain;
+  } else if (sc.ok.includes(extId)) {
+    resultType = 'ok';
+    pts = sc.okScore;
+    explain = sc.okExplain;
+  } else {
+    resultType = 'wrong';
+    pts = 0;
+    explain = sc.wrongExplain;
+  }
+
+  state.score = Math.max(0, state.score + pts);
+  hudScore.innerHTML = `${state.score} <span>PTS</span>`;
+
+  // Store in the existing result object (classify data already there)
+  const resultObj = state.scenarioResults[state.currentScenario] || {};
+  resultObj.scenario = sc;
+  resultObj.chosen = extId;
+  resultObj.resultType = resultType;
+  resultObj.points = Math.max(0, pts);
+  resultObj.timeUsed = 20 - state.timeLeft;
+  state.scenarioResults[state.currentScenario] = resultObj;
+
+  // Disable all cards and show badges
+  const cards = extOptions.querySelectorAll('.ext-card');
+  cards.forEach(card => {
+    card.classList.add('disabled');
+    const eid = card.dataset.ext;
+    const badge = document.getElementById('badge-' + eid);
+
+    if (sc.best.includes(eid)) {
+      badge.textContent = '★ BEST';
+      badge.className = 'ext-result-badge visible best';
+      if (eid !== extId) card.style.borderColor = 'rgba(6,214,160,0.3)';
+    } else if (sc.ok.includes(eid)) {
+      badge.textContent = 'OK';
+      badge.className = 'ext-result-badge visible ok';
+    } else if (sc.danger.includes(eid)) {
+      badge.textContent = '⚠ DANGER';
+      badge.className = 'ext-result-badge visible wrong';
+    } else {
+      badge.textContent = '✗';
+      badge.className = 'ext-result-badge visible wrong';
+    }
+
+    if (eid === extId) {
+      if (resultType === 'best') card.classList.add('selected-best');
+      else if (resultType === 'ok') card.classList.add('selected-ok');
+      else if (resultType === 'danger') card.classList.add('selected-danger');
+      else card.classList.add('selected-wrong');
+    }
+  });
+
+  // Fire animation
+  if (resultType === 'best') {
+    if (fireContainer) fireContainer.classList.add('extinguished');
+    // Add spray effect in scene
+    const scene = document.getElementById('fireScene');
+    if (scene) {
+      const spray = document.createElement('div');
+      spray.style.cssText = `
+        position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10;
+        width:300px;height:200px;
+        background:radial-gradient(ellipse at center bottom, rgba(200,200,200,0.5) 0%, rgba(200,200,200,0.2) 30%, transparent 60%);
+        animation:sprayBurst 1.2s ease-out forwards;
+        pointer-events:none;
+      `;
+      scene.appendChild(spray);
+    }
+    triggerFlash('green');
+    vignette.classList.remove('active');
+  } else if (resultType === 'ok') {
+    if (fireContainer) {
+      fireContainer.style.transform = 'scale(0.5)';
+      fireContainer.style.opacity = '0.5';
+    }
+    vignette.classList.remove('active');
+  } else if (resultType === 'danger') {
+    if (fireContainer) fireContainer.classList.add('spread');
+    triggerFlash('red');
+    document.getElementById('app').classList.add('shake');
+    setTimeout(() => document.getElementById('app').classList.remove('shake'), 500);
+    // Show danger overlay
+    showDanger(sc);
+    return; // danger overlay handles the flow
+  } else {
+    triggerFlash('red');
+  }
+
+  clearInterval(fireEffectsInterval);
+  clearInterval(fireEffectsInterval2);
+
+  // Show result overlay
+  setTimeout(() => {
+    showResult(resultType, pts, explain);
+  }, 800);
+}
+
+function triggerFlash(type) {
+  dangerFlash.className = '';
+  void dangerFlash.offsetWidth; // reflow
+  dangerFlash.classList.add(type === 'green' ? 'green-flash' : 'active');
+}
+
+function showDanger(sc) {
+  $('dangerIcon').textContent = sc.id === 'electrical' ? '⚡' : '💥';
+  $('dangerTitle').textContent = sc.id === 'electrical' ? 'ELECTROCUTION RISK' :
+    sc.id === 'kitchen' ? 'GREASE EXPLOSION' :
+    sc.id === 'metal' ? 'METAL EXPLOSION' : 'FIRE SPREAD';
+  $('dangerText').innerHTML = sc.dangerExplain;
+  dangerOverlay.classList.add('visible');
+  document.getElementById('app').classList.add('shake');
+  setTimeout(() => document.getElementById('app').classList.remove('shake'), 500);
+
+  state.dangerCallback = () => {
+    clearInterval(fireEffectsInterval);
+    clearInterval(fireEffectsInterval2);
+    vignette.classList.remove('active');
+    showResult('danger', -1,
+      sc.dangerExplain + '<br><br>The correct choice: ' + sc.bestExplain);
+  };
+}
+
+function closeDanger() {
+  dangerOverlay.classList.remove('visible');
+  if (state.dangerCallback) {
+    state.dangerCallback();
+    state.dangerCallback = null;
+  }
+}
+
+function showResult(type, pts, explain) {
+  const overlay = document.getElementById('resultOverlay');
+  const icon = document.getElementById('resultIcon');
+  const title = document.getElementById('resultTitle');
+  const score = document.getElementById('resultScore');
+  const explainEl = document.getElementById('resultExplain');
+  const card = overlay.querySelector('.result-card');
+
+  // Remove old card classes
+  card.classList.remove('success-card', 'partial-card', 'fail-card');
+
+  if (type === 'best') {
+    icon.textContent = '✅';
+    title.textContent = 'FIRE CONTAINED';
+    title.className = 'result-title success';
+    score.textContent = `+${pts} POINTS`;
+    card.classList.add('success-card');
+  } else if (type === 'ok') {
+    icon.textContent = '⚠️';
+    title.textContent = 'PARTIALLY EFFECTIVE';
+    title.className = 'result-title partial';
+    score.textContent = `+${pts} POINT`;
+    card.classList.add('partial-card');
+  } else if (type === 'danger') {
+    icon.textContent = '💀';
+    title.textContent = 'CRITICAL FAILURE';
+    title.className = 'result-title danger';
+    score.textContent = 'PENALTY';
+    card.classList.add('fail-card');
+  } else {
+    icon.textContent = '❌';
+    title.textContent = 'INEFFECTIVE';
+    title.className = 'result-title fail';
+    score.textContent = '0 POINTS';
+    card.classList.add('fail-card');
+  }
+
+  explainEl.innerHTML = explain;
+
+  const btnText = state.currentScenario < SCENARIOS.length - 1 ? 'NEXT SCENARIO →' : 'P.A.S.S. TECHNIQUE →';
+  document.getElementById('resultBtn').textContent = btnText;
+
+  overlay.classList.add('visible');
+}
+
+function nextStep() {
+  extPanel.classList.remove('visible');
+  classifyPanel.classList.remove('visible');
+  if (state.currentScenario < SCENARIOS.length - 1) {
+    startScenario(state.currentScenario + 1);
+  } else {
+    startPASS();
+  }
+}
+
+// ============================================
+// P.A.S.S. TECHNIQUE
+// ============================================
+function startPASS() {
+  state.phase = 'pass';
+  state.passStep = 0;
+  state.passScore = 0;
+  hudPhase.textContent = 'BONUS: P.A.S.S.';
+  hudTimer.textContent = '--';
+  updateHudSteps();
+  vignette.classList.remove('active');
+  clearInterval(fireEffectsInterval);
+  clearInterval(fireEffectsInterval2);
+
+  gameArea.innerHTML = `
+    <div class="pass-phase" style="animation: fadeInUp 0.6s ease">
+      <div class="pass-container">
+        <div class="pass-title">P.A.S.S. TECHNIQUE</div>
+        <div class="pass-subtitle">Click the four steps in the correct order 按正确顺序点击四个步骤</div>
+        <div class="pass-ext-visual" id="passExt">
+          <div class="spray-effect"></div>
+        </div>
+        <div class="pass-steps" id="passSteps">
+          ${PASS_STEPS.map((s, i) => `
+            <div class="pass-step ${i === 0 ? 'active-next' : ''}" data-idx="${i}" onclick="handlePassStep(${i})">
+              <div class="check">✓</div>
+              <div class="pass-step-num">${i + 1}</div>
+              <div class="pass-step-letter">${s.letter}</div>
+              <div class="pass-step-en">${s.en}</div>
+              <div class="pass-step-cn">${s.cn}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="pass-complete-msg" id="passMsg">TECHNIQUE MASTERED ✓</div>
+        <button class="pass-continue-btn" id="passContinue" onclick="showReport()">VIEW REPORT →</button>
+      </div>
+    </div>
+  `;
+}
+
+function handlePassStep(idx) {
+  if (idx !== state.passStep) {
+    // Wrong order
+    const step = document.querySelector(`.pass-step[data-idx="${idx}"]`);
+    step.classList.add('wrong-order');
+    setTimeout(() => step.classList.remove('wrong-order'), 400);
+    return;
+  }
+
+  const step = document.querySelector(`.pass-step[data-idx="${idx}"]`);
+  step.classList.remove('active-next');
+  step.classList.add('done');
+
+  state.passStep++;
+  state.passScore++;
+
+  // Animate extinguisher
+  const ext = document.getElementById('passExt');
+  if (idx === 0) ext.style.boxShadow = '0 0 30px rgba(244,162,97,0.4)';
+  if (idx === 1) ext.style.transform = 'rotate(-15deg)';
+  if (idx === 2) {
+    ext.classList.add('spraying');
+    ext.style.transform = 'rotate(-15deg)';
+  }
+  if (idx === 3) {
+    ext.style.transform = 'rotate(-15deg) translateX(10px)';
+    setTimeout(() => ext.style.transform = 'rotate(-15deg) translateX(-10px)', 300);
+  }
+
+  // Highlight next
+  if (state.passStep < 4) {
+    const next = document.querySelector(`.pass-step[data-idx="${state.passStep}"]`);
+    next.classList.add('active-next');
+  }
+
+  if (state.passStep >= 4) {
+    state.score += 4;
+    hudScore.innerHTML = `${state.score} <span>PTS</span>`;
+    setTimeout(() => {
+      document.getElementById('passMsg').classList.add('visible');
+      document.getElementById('passContinue').classList.add('visible');
+    }, 500);
+  }
+}
+
+// ============================================
+// REPORT
+// ============================================
+function showReport() {
+  state.phase = 'report';
+  hudPhase.textContent = 'ASSESSMENT';
+  hudTimer.textContent = '--';
+  updateHudSteps();
+
+  const total = state.score;
+  const max = state.maxScore;
+  const pct = total / max;
+
+  let grade, gradeClass, titleEn, titleCn;
+  if (pct >= 0.9) { grade = 'S'; gradeClass = 's-rank'; titleEn = 'Chief Fire Officer'; titleCn = '首席消防官'; }
+  else if (pct >= 0.75) { grade = 'A'; gradeClass = 'a-rank'; titleEn = 'Senior Safety Specialist'; titleCn = '高级安全专员'; }
+  else if (pct >= 0.55) { grade = 'B'; gradeClass = 'b-rank'; titleEn = 'Safety Specialist'; titleCn = '安全专员'; }
+  else if (pct >= 0.3) { grade = 'C'; gradeClass = 'c-rank'; titleEn = 'Safety Trainee'; titleCn = '安全实习生'; }
+  else { grade = 'F'; gradeClass = 'f-rank'; titleEn = 'Needs Retraining'; titleCn = '需要重新培训'; }
+
+  // Compute category scores for radar
+  const classifyScore = state.scenarioResults.filter(r => r && r.classifyCorrect).length * 2;
+  const extinguisherScore = state.scenarioResults.reduce((a, r) => a + (r ? r.points || 0 : 0), 0);
+  const speedScore = state.scenarioResults.reduce((a, r) => a + Math.max(0, (20 - (r ? r.timeUsed || 20 : 20)) / 20 * 3), 0);
+  const safetyScore = state.scenarioResults.filter(r => r && r.resultType !== 'danger').length * 2.4;
+  const techniqueScore = state.passScore * 3;
+
+  const categories = [
+    { name: 'Fire Classification 火灾分类', score: classifyScore, max: 10 },
+    { name: 'Extinguisher Selection 灭火器选择', score: extinguisherScore, max: 15 },
+    { name: 'Response Speed 响应速度', score: Math.min(speedScore, 15), max: 15 },
+    { name: 'Safety Awareness 安全意识', score: Math.min(safetyScore, 12), max: 12 },
+    { name: 'P.A.S.S. Technique 操作技术', score: Math.min(techniqueScore, 12), max: 12 }
+  ];
+
+  gameArea.innerHTML = `
+    <div class="report-phase" style="animation: fadeInUp 0.8s ease">
+      <div class="report-container">
+        <div class="report-header">
+          <div class="report-grade ${gradeClass}">${grade}</div>
+          <div class="report-title-text">${titleEn}</div>
+          <div class="report-title-cn">${titleCn}</div>
+          <div class="report-total-score">Total Score: <em>${total}</em> / ${max} (${Math.round(pct * 100)}%)</div>
+        </div>
+
+        <div class="radar-section">
+          <div class="radar-canvas-wrap">
+            <canvas id="radarCanvas" width="640" height="640"></canvas>
+          </div>
+          <div class="report-breakdown" id="reportBreakdown">
+            ${categories.map(c => {
+              const p = c.score / c.max;
+              const barClass = p >= 0.7 ? 'green' : p >= 0.4 ? 'amber' : 'red';
+              return `
+                <div class="breakdown-item">
+                  <div class="breakdown-label">${c.name}</div>
+                  <div class="breakdown-bar-bg">
+                    <div class="breakdown-bar ${barClass}" data-width="${p * 100}"></div>
+                  </div>
+                  <div class="breakdown-score">${Math.round(c.score)}/${c.max}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        <div class="report-scenarios">
+          ${state.scenarioResults.map((r, i) => {
+            if (!r || !r.scenario) return '';
+            const ptClass = r.resultType === 'best' ? 'best' : r.resultType === 'ok' ? 'ok' : 'fail';
+            const chosen = r.chosen ? EXTINGUISHERS.find(e => e.id === r.chosen) : null;
+            const classResult = r.classifyCorrect ? '<span style="color:var(--green)">✓ Correct</span>' : '<span style="color:var(--red)">✗ Wrong</span>';
+            return `
+              <div class="report-scenario-card">
+                <div class="sc-name">Scenario ${i + 1}: ${r.scenario.nameCn}</div>
+                <div class="sc-result">
+                  Class ID: ${classResult} (Class ${r.scenario.fireClass})<br>
+                  Extinguisher: ${chosen ? chosen.name + ' (' + chosen.nameCn + ')' : 'No selection'}<br>
+                  Result: ${r.resultType === 'best' ? '★ Best' : r.resultType === 'ok' ? '⚠ OK' : r.resultType === 'danger' ? '⚠ DANGER' : '✗ Failed'}
+                </div>
+                <div class="sc-points ${ptClass}">+${(r.classifyCorrect ? 2 : 0) + (r.points || 0)} pts</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <button class="report-retry-btn" onclick="location.reload()">RETRY SIMULATION</button>
+      </div>
+    </div>
+  `;
+
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.breakdown-bar').forEach(bar => {
+      bar.style.width = bar.dataset.width + '%';
+    });
+  }, 300);
+
+  // Draw radar
+  setTimeout(() => drawRadar(categories), 500);
+}
+
+function drawRadar(categories) {
+  const canvas = document.getElementById('radarCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const cx = w / 2, cy = h / 2;
+  const r = 220;
+  const n = categories.length;
+
+  ctx.clearRect(0, 0, w, h);
+
+  // Grid
+  for (let ring = 1; ring <= 4; ring++) {
+    const rr = r * ring / 4;
+    ctx.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+      const x = cx + rr * Math.cos(angle);
+      const y = cy + rr * Math.sin(angle);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Axes
+  for (let i = 0; i < n; i++) {
+    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+    ctx.stroke();
+
+    // Labels
+    const lx = cx + (r + 40) * Math.cos(angle);
+    const ly = cy + (r + 40) * Math.sin(angle);
+    ctx.fillStyle = '#adb5bd';
+    ctx.font = '22px Rajdhani, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const label = categories[i].name.split(' ')[0];
+    ctx.fillText(label, lx, ly);
+  }
+
+  // Data polygon
+  ctx.beginPath();
+  categories.forEach((c, i) => {
+    const val = Math.min(c.score / c.max, 1);
+    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+    const x = cx + r * val * Math.cos(angle);
+    const y = cy + r * val * Math.sin(angle);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(6,214,160,0.15)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(6,214,160,0.8)';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // Data points
+  categories.forEach((c, i) => {
+    const val = Math.min(c.score / c.max, 1);
+    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+    const x = cx + r * val * Math.cos(angle);
+    const y = cy + r * val * Math.sin(angle);
+    ctx.beginPath();
+    ctx.arc(x, y, 7, 0, Math.PI * 2);
+    ctx.fillStyle = '#06d6a0';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+  });
+}
+
+// ============================================
+// INIT
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+  // Welcome screen ambient smoke
+  const smokeContainer = document.getElementById('welcomeSmoke');
+  if (smokeContainer) {
+    setInterval(() => {
+      const p = document.createElement('div');
+      p.style.cssText = `
+        position:absolute;border-radius:50%;
+        background:radial-gradient(circle,rgba(60,60,60,0.15),transparent 70%);
+        width:${60+Math.random()*80}px;height:${60+Math.random()*80}px;
+        left:${Math.random()*100}%;bottom:-20px;
+        animation:smokeRise ${4+Math.random()*3}s ease-out forwards;
+        --smx:${-40+Math.random()*80}px;
+        filter:blur(10px);
+      `;
+      smokeContainer.appendChild(p);
+      setTimeout(() => p.remove(), 7000);
+    }, 600);
+  }
+});
+
+// Add oilShimmer keyframes
+const styleSheet = document.createElement('style');
+styleSheet.textContent = `
+  @keyframes oilShimmer {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.8; }
+  }
+`;
+document.head.appendChild(styleSheet);
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"75124c326cb447fe934cde04713ae013","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
