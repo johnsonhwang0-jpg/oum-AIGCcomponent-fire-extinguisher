@@ -2568,7 +2568,7 @@ function startPASS() {
           <div class="pass-drag-sources" id="passDragSources">
             <div class="drag-sources-title">Drag Steps</div>
             ${shuffledSteps.map((s, i) => `
-              <div class="pass-step drag-source" draggable="true" data-step="${i}" data-order="${PASS_STEPS.findIndex(step => step.letter === s.letter)}">
+              <div class="pass-step drag-source" draggable="true" data-step="${i}" data-order="${PASS_STEPS.indexOf(s)}">
                 <div class="pass-step-letter">${s.letter}</div>
                 <div class="pass-step-en">${s.en}</div>
                 <div class="pass-step-desc">${s.desc}</div>
