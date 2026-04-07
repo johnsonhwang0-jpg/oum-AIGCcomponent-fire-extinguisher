@@ -1131,80 +1131,151 @@ body {
   100% { width: 90px; opacity: 0.7; }
 }
 
-.pass-steps {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-top: 30px;
+.pass-drag-drop {
+  display: flex; gap: 40px;
+  margin: 30px 0;
+  align-items: flex-start;
+}
+
+.pass-drag-sources {
+  flex: 1;
+  min-width: 200px;
+}
+
+.drag-sources-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 14px; font-weight: 700;
+  color: var(--amber);
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.pass-drop-targets {
+  flex: 2;
+  min-width: 300px;
+}
+
+.drop-targets-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 14px; font-weight: 700;
+  color: var(--amber);
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.drop-targets {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
 }
 
 .pass-step {
   background: rgba(255,255,255,0.04);
-  border: 2px solid rgba(255,255,255,0.1);
-  padding: 24px 16px;
-  cursor: pointer;
-  transition: all 0.3s;
+  border: 2px solid rgba(255,255,255,0.08);
+  padding: 16px 12px;
+  text-align: center;
   position: relative;
+  transition: all 0.25s;
+  overflow: hidden;
+  margin-bottom: 12px;
 }
-.pass-step:hover:not(.done):not(.disabled) {
+
+.drag-source {
+  cursor: grab;
+  animation: float 3s ease-in-out infinite;
+}
+
+.drag-source:hover {
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.drag-source:active {
+  cursor: grabbing;
+}
+
+.drag-source.dragging {
+  opacity: 0.6;
+  transform: scale(1.05);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.drop-target {
+  background: rgba(255,255,255,0.04);
+  border: 2px dashed rgba(255,255,255,0.2);
+  padding: 16px 12px;
+  text-align: center;
+  position: relative;
+  transition: all 0.25s;
+  min-height: 120px;
+  display: flex; flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.drop-number {
+  font-family: 'Orbitron', monospace;
+  font-size: 16px; font-weight: 800;
+  color: var(--amber);
+  margin-bottom: 8px;
+}
+
+.drop-placeholder {
+  font-size: 12px; color: var(--steel);
+  line-height: 1.4;
+  text-align: center;
+  opacity: 0.6;
+}
+
+.drop-target.drag-over {
   border-color: var(--amber);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+  background: rgba(244,162,97,0.1);
+  transform: scale(1.05);
 }
-.pass-step.active-next {
-  border-color: rgba(244,162,97,0.4);
-  animation: stepGlow 1.5s ease-in-out infinite;
-}
-@keyframes stepGlow {
-  0%, 100% { box-shadow: 0 0 10px rgba(244,162,97,0.1); }
-  50% { box-shadow: 0 0 20px rgba(244,162,97,0.3); }
-}
-.pass-step.done {
+
+.drop-target.correct {
   border-color: var(--green);
-  background: rgba(6,214,160,0.08);
-  pointer-events: none;
+  background: rgba(6,214,160,0.1);
 }
-.pass-step.wrong-order {
+
+.drop-target.wrong {
   animation: wrongShake 0.4s ease;
   border-color: var(--red);
+  background: rgba(230,57,70,0.1);
 }
-@keyframes wrongShake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-8px); }
-  75% { transform: translateX(8px); }
+
+.dropped-step {
+  width: 100%;
+  margin-top: 8px;
 }
-.pass-step.disabled {
-  pointer-events: none; opacity: 0.3;
+
+.dropped {
+  border-color: var(--green);
+  background: rgba(6,214,160,0.2);
+  cursor: default;
+  animation: none;
 }
-.pass-step-num {
-  font-family: 'Orbitron', monospace;
-  font-size: 28px; font-weight: 900;
-  color: var(--steel-dark);
-  margin-bottom: 8px;
-  transition: color 0.3s;
-}
-.pass-step.done .pass-step-num { color: var(--green); }
+
 .pass-step-letter {
   font-family: 'Orbitron', monospace;
-  font-size: 20px; font-weight: 700;
-  color: var(--amber);
+  font-size: 24px; font-weight: 800;
+  color: var(--white);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.pass-step-en {
+  font-size: 12px; font-weight: 600;
+  color: var(--white);
   margin-bottom: 4px;
 }
-.pass-step-en {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 16px; font-weight: 600;
-  color: var(--white);
+
+.pass-step-desc {
+  font-size: 10px; color: var(--steel);
+  line-height: 1.4;
 }
-.pass-step-cn {
-  font-size: 13px; color: var(--steel-dark);
-  margin-top: 2px;
-}
-.pass-step .check {
-  position: absolute; top: 8px; right: 10px;
-  font-size: 18px; color: var(--green);
-  opacity: 0; transition: opacity 0.3s;
-}
-.pass-step.done .check { opacity: 1; }
 
 .pass-complete-msg {
   margin-top: 30px;
@@ -1214,6 +1285,7 @@ body {
   letter-spacing: 3px;
   opacity: 0; transition: opacity 0.5s;
 }
+
 .pass-complete-msg.visible { opacity: 1; }
 
 .pass-continue-btn {
@@ -2481,75 +2553,131 @@ function startPASS() {
   clearInterval(fireEffectsInterval);
   clearInterval(fireEffectsInterval2);
 
+  // Shuffle PASS steps for drag-and-drop
+  const shuffledSteps = [...PASS_STEPS].sort(() => Math.random() - 0.5);
+
   gameArea.innerHTML = `
     <div class="pass-phase" style="animation: fadeInUp 0.6s ease">
       <div class="pass-container">
         <div class="pass-title">P.A.S.S. TECHNIQUE</div>
-        <div class="pass-subtitle">Click the four steps in the correct order</div>
+        <div class="pass-subtitle">Drag and drop the steps in the correct order</div>
         <div class="pass-ext-visual" id="passExt">
           <div class="spray-effect"></div>
         </div>
-        <div class="pass-steps" id="passSteps">
-          ${PASS_STEPS.map((s, i) => `
-            <div class="pass-step ${i === 0 ? 'active-next' : ''}" data-idx="${i}" onclick="handlePassStep(${i})">
-              <div class="check">✓</div>
-              <div class="pass-step-num">${i + 1}</div>
-              <div class="pass-step-letter">${s.letter}</div>
-              <div class="pass-step-en">${s.en}</div>
-              <div class="pass-step-desc">${s.desc}</div>
+        <div class="pass-drag-drop">
+          <div class="pass-drag-sources" id="passDragSources">
+            <div class="drag-sources-title">Drag Steps</div>
+            ${shuffledSteps.map((s, i) => `
+              <div class="pass-step drag-source" draggable="true" data-step="${i}" data-order="${PASS_STEPS.findIndex(step => step.letter === s.letter)}">
+                <div class="pass-step-letter">${s.letter}</div>
+                <div class="pass-step-en">${s.en}</div>
+                <div class="pass-step-desc">${s.desc}</div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="pass-drop-targets" id="passDropTargets">
+            <div class="drop-targets-title">Drop Here (1-4)</div>
+            <div class="drop-targets">
+              ${[0, 1, 2, 3].map(i => `
+                <div class="drop-target" data-target="${i}">
+                  <div class="drop-number">${i + 1}</div>
+                  <div class="drop-placeholder">Drop step here</div>
+                  <div class="dropped-step"></div>
+                </div>
+              `).join('')}
             </div>
-          `).join('')}
+          </div>
         </div>
         <div class="pass-complete-msg" id="passMsg">TECHNIQUE MASTERED ✓</div>
         <button class="pass-continue-btn" id="passContinue" onclick="showReport()">VIEW REPORT →</button>
       </div>
     </div>
   `;
+
+  // Add drag and drop event listeners
+  addDragDropListeners();
 }
 
-function handlePassStep(idx) {
-  if (idx !== state.passStep) {
-    // Wrong order
-    const step = document.querySelector(`.pass-step[data-idx="${idx}"]`);
-    step.classList.add('wrong-order');
-    setTimeout(() => step.classList.remove('wrong-order'), 400);
-    return;
-  }
-
-  const step = document.querySelector(`.pass-step[data-idx="${idx}"]`);
-  step.classList.remove('active-next');
-  step.classList.add('done');
-
-  state.passStep++;
-  state.passScore++;
-
-  // Animate extinguisher
-  const ext = document.getElementById('passExt');
-  if (idx === 0) ext.style.boxShadow = '0 0 30px rgba(244,162,97,0.4)';
-  if (idx === 1) ext.style.transform = 'rotate(-15deg)';
-  if (idx === 2) {
-    ext.classList.add('spraying');
-    ext.style.transform = 'rotate(-15deg)';
-  }
-  if (idx === 3) {
-    ext.style.transform = 'rotate(-15deg) translateX(10px)';
-    setTimeout(() => ext.style.transform = 'rotate(-15deg) translateX(-10px)', 300);
-  }
-
-  // Highlight next
-  if (state.passStep < 4) {
-    const next = document.querySelector(`.pass-step[data-idx="${state.passStep}"]`);
-    next.classList.add('active-next');
-  }
-
-  if (state.passStep >= 4) {
-    state.score += 4;
-    hudScore.innerHTML = `${state.score} <span>PTS</span>`;
-    setTimeout(() => {
-      document.getElementById('passMsg').classList.add('visible');
-      document.getElementById('passContinue').classList.add('visible');
-    }, 500);
-  }
+function addDragDropListeners() {
+  const dragSources = document.querySelectorAll('.drag-source');
+  const dropTargets = document.querySelectorAll('.drop-target');
+  let draggedElement = null;
+  
+  dragSources.forEach(source => {
+    source.addEventListener('dragstart', function(e) {
+      draggedElement = this;
+      this.classList.add('dragging');
+      e.dataTransfer.setData('text/plain', this.dataset.order);
+    });
+    
+    source.addEventListener('dragend', function() {
+      this.classList.remove('dragging');
+    });
+  });
+  
+  dropTargets.forEach(target => {
+    target.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      this.classList.add('drag-over');
+    });
+    
+    target.addEventListener('dragleave', function() {
+      this.classList.remove('drag-over');
+    });
+    
+    target.addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.classList.remove('drag-over');
+      
+      if (this.querySelector('.dropped-step').hasChildNodes()) {
+        return; // Target already has a step
+      }
+      
+      const order = parseInt(e.dataTransfer.getData('text/plain'));
+      const targetIndex = parseInt(this.dataset.target);
+      
+      if (order === targetIndex) {
+        // Correct order
+        const clonedStep = draggedElement.cloneNode(true);
+        clonedStep.classList.remove('drag-source');
+        clonedStep.classList.add('dropped');
+        
+        this.querySelector('.drop-placeholder').style.display = 'none';
+        this.querySelector('.dropped-step').appendChild(clonedStep);
+        this.classList.add('correct');
+        
+        // Animate extinguisher
+        const ext = document.getElementById('passExt');
+        if (targetIndex === 0) ext.style.boxShadow = '0 0 30px rgba(244,162,97,0.4)';
+        if (targetIndex === 1) ext.style.transform = 'rotate(-15deg)';
+        if (targetIndex === 2) {
+          ext.classList.add('spraying');
+          ext.style.transform = 'rotate(-15deg)';
+        }
+        if (targetIndex === 3) {
+          ext.style.transform = 'rotate(-15deg) translateX(10px)';
+          setTimeout(() => ext.style.transform = 'rotate(-15deg) translateX(-10px)', 300);
+        }
+        
+        state.passStep++;
+        state.passScore++;
+        
+        // Check if all steps are completed
+        if (state.passStep >= 4) {
+          state.score += 4;
+          hudScore.innerHTML = `${state.score} <span>PTS</span>`;
+          setTimeout(() => {
+            document.getElementById('passMsg').classList.add('visible');
+            document.getElementById('passContinue').classList.add('visible');
+          }, 500);
+        }
+      } else {
+        // Wrong order
+        this.classList.add('wrong');
+        setTimeout(() => this.classList.remove('wrong'), 800);
+      }
+    });
+  });
 }
 
 // ============================================
